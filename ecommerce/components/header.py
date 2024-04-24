@@ -1,215 +1,243 @@
 import reflex as rx
-from ecommerce.styles.styles import Size
-import ecommerce.api.userAPI as userAPI
-from ecommerce import const
-from fastapi.security import OAuth2PasswordRequestForm
+import ecommerce.styles.styles as style
+from ecommerce.routes import Route
+from ecommerce.state.userState import LoginState, RegisterState
+
 
 
 def header() -> rx.Component:
     return rx.vstack(
         # ! HEADER
-        rx.center(
+        rx.hstack(
+            # TODO Icono de la tienda
+            rx.vstack(rx.text("Icono"), position="absolute", left="4em"),
+            # TODO Letras chulas con el nombre de la tienda
+            rx.vstack(
+                rx.link(
+                    rx.heading("I&N Shop"), padding_x=style.Size.SMALL.value,
+                    href=Route.INDEX.value
+                )
+            ),
+            # Iconos de idioma, perfil y cesta
             rx.hstack(
-                # TODO Icono de la tienda
-                rx.vstack(rx.text("Icono"), position="fixed", left="4em"),
-                # TODO Letras chulas con el nombre de la tienda
-                rx.vstack(rx.heading("I&N Shop"), padding_x=Size.SMALL.value),
-                # Iconos de idioma, perfil y cesta
-                rx.hstack(
-                    # Icono del idioma
-                    rx.vstack(
-                        rx.menu(
-                            rx.menu_button(
-                                rx.image(
-                                    src="/icons/spainIcon.png",
-                                    width=Size.LARGE.value,
-                                    height=Size.LARGE.value,
-                                )
+                # Icono del idioma
+                rx.vstack(
+                    rx.menu.root(
+                        rx.menu.trigger(
+                            rx.chakra.image(
+                                src="/icons/spainIcon.png",
+                                width=style.Size.LARGE.value,
+                                height=style.Size.LARGE.value,
+                            )
+                        )
+                    ),
+                    padding_right=style.Size.MEDIUM.value,
+                ),
+                # Nombre de usuario en caso de estar logueado
+                rx.vstack(
+                    rx.text(LoginState.username)
+                ),
+                # Icono de inicio de sesion
+                rx.vstack(
+                    rx.menu.root(
+                        rx.menu.trigger(
+                            rx.image(
+                                src="/icons/userIcon.png",
+                                width=style.Size.LARGE.value,
+                                height=style.Size.LARGE.value,
                             )
                         ),
-                        padding_right=Size.MEDIUM.value,
-                    ),
-                    # Icono de inicio de sesion
-                    rx.vstack(
-                        rx.menu(
-                            rx.menu_button(
-                                rx.image(
-                                    src="/icons/userIcon.png",
-                                    width=Size.LARGE.value,
-                                    height=Size.LARGE.value,
+                        rx.cond(
+                            LoginState.login_cookie == "",
+                            rx.menu.content(
+                                rx.menu.item(
+                                    "Iniciar sesión", on_click=LoginState.change
+                                ),
+                                rx.menu.item(
+                                    "Registrarme", on_click=RegisterState.change
                                 )
                             ),
-                            rx.menu_list(
-                                rx.menu_item(
-                                    "Iniciar sesión", on_click=LogInState.change_log_in
+                            rx.menu.content(
+                                rx.menu.item(
+                                    "Mi cuenta", on_click=rx.redirect(Route.MY_ACCOUNT.value)
                                 ),
-                                rx.modal(
-                                    rx.modal_overlay(
-                                        rx.modal_content(
-                                            rx.modal_header("Iniciar Sesión"),
-                                            rx.modal_body(log_in()),
-                                            rx.modal_footer(
-                                                rx.button(
-                                                    "Cerrar",
-                                                    on_click=LogInState.change_log_in,
-                                                )
-                                            ),
-                                        )
-                                    ),
-                                    is_open=LogInState.show_log_in,
-                                ),
-                                rx.menu_item(
-                                    "Registrarme", on_click=RegisterState.change
-                                ),
-                                rx.modal(
-                                    rx.modal_overlay(
-                                        rx.modal_content(
-                                            rx.modal_header("Registrarme"),
-                                            rx.modal_body(register()),
-                                            rx.modal_footer(
-                                                rx.button(
-                                                    "Cerrar",
-                                                    on_click=RegisterState.change,
-                                                )
-                                            ),
-                                        )
-                                    ),
-                                    is_open=RegisterState.show,
-                                ),
-                                rx.menu_item("Mi cuenta"),
+                                rx.menu.item(
+                                    "Cerrar sesión", on_click=LoginState.log_out
+                                )
                             ),
                         ),
-                        padding_x=Size.MEDIUM.value,
                     ),
-                    # Icono de la cesta
-                    rx.vstack(
-                        rx.button(
-                            rx.image(
-                                src="/icons/shoppingIcon.png",
-                                width=Size.LARGE.value,
-                                height=Size.LARGE.value,
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.center(
+                                rx.dialog.title("Iniciar sesión")
                             ),
-                            variant="unstyled",
+                            log_in(),
+                            rx.flex(
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column"
+                            )
                         ),
-                        padding_x=Size.MEDIUM.value,
+                        open=LoginState.show
                     ),
-                    position="absolute",
-                    right="4em",
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.center(
+                                rx.dialog.title("Registrarme")
+                            ),
+                            register(),
+                            rx.flex(
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=RegisterState.change),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="row"
+                            ),
+                        ),
+                        open=RegisterState.show
+                    ),
+                    padding_x=style.Size.MEDIUM.value,
                 ),
-                width="100%",
-                padding_top=Size.LARGE.value,
-                padding_bottom=Size.MEDIUM.value,
-            )
+                # Icono de la cesta
+                rx.vstack(
+                    rx.link(
+                        rx.image(
+                            src="/icons/shoppingIcon.png",
+                            width=style.Size.LARGE.value,
+                            height=style.Size.LARGE.value,
+                        ),
+                        variant="ghost",
+                    ),
+                    padding_x=style.Size.MEDIUM.value,
+                ),
+                position="absolute",
+                right="4em",
+            ),
+            width="100%",
+            justify="center",
+            padding_top=style.Size.LARGE.value,
+            padding_bottom=style.Size.MEDIUM.value,
         ),
         rx.divider(border_color="black", width="100%"),
         # ! NAVBAR
         rx.hstack(
             rx.vstack(
-                rx.menu(
-                    rx.menu_button("Camisetas"),
-                    rx.menu_list(
-                        rx.menu_item("Manga corta"), rx.menu_item("Manga larga")
-                    ),
+                rx.button(
+                    "Camisetas", style=style.BUTTON,
+                    on_click=rx.redirect(f"{Route.PRODUCTS.value}/tshirt")
                 ),
-                padding_x=Size.BIG.value,
+                padding_x=style.Size.BIG.value,
             ),
             rx.center(
                 rx.divider(orientation="vertical", border_color="black"),
                 height="2em",
             ),
             rx.vstack(
-                rx.menu(
-                    rx.menu_button("Pantalones"),
-                    rx.menu_list(rx.menu_item("Jogger"), rx.menu_item("Skinny")),
-                ),
-                padding_x=Size.BIG.value,
+                rx.button("Pantalones", style=style.BUTTON),
+                padding_x=style.Size.BIG.value,
             ),
+            justify="center",
+            width="100%"
         ),
         width="100%",
     )
 
 
-class OauthForm(rx.Base):
-    username: str
-    password: str
-
-
-# Class that manages the login pop-up
-class LogInState(rx.State):
-    show_log_in: bool = False
-    custom_cookie: str = rx.Cookie(name="jwt", max_age=const.ACCESS_TOKEN_DURATION)
-
-    def change_log_in(self):
-        self.show_log_in = not (self.show_log_in)
-
-    async def handle_submit(self, form_data: dict):
-        oauth_form = OauthForm(
-            username=form_data.get("username"), password=form_data.get("password")
-        )
-        try:
-            self.custom_cookie = await userAPI.login_for_access_token(oauth_form)
-        except Exception as e:
-            return rx.window_alert("Usuario o contraseña incorrectos")
-
-
 # Method showing the login form
 def log_in() -> rx.Component:
     return rx.form(
-        rx.vstack(
-            rx.input(
-                placeholder="Email",
-                name="username",
+        rx.flex(
+            rx.flex(
+                rx.input(
+                    placeholder="Email",
+                    name="username",
+                    required=True,
+                ),
+                rx.input(
+                    placeholder="Contraseña",
+                    name="password",
+                    required=True,
+                    type="password"
+                ),
+                direction="column",
+                spacing="3"
             ),
-            rx.input(
-                placeholder="Contraseña",
-                name="password",
+            rx.flex(
+                rx.button("Iniciar sesión", type="submit", on_click=LoginState.change),
+                direction="column"
             ),
-            rx.button("Iniciar sesión", type_="submit", on_click=LogInState.change_log_in),
+            direction="column",
+            spacing="6"
         ),
-        on_submit=LogInState.handle_submit,
+        on_submit=LoginState.log_in,
         reset_on_submit=True,
     )
-
-
-# Class that manages the register pop-up
-class RegisterState(rx.State):
-    show: bool = False
-    form_data: dict = {}
-
-    def change(self):
-        self.show = not (self.show)
-
-    def handle_submit(self, form_data: dict):
-        self.form_data = form_data
-        userAPI.register_user(self.form_data)
 
 
 # Method showing the register form
 def register() -> rx.Component:
     return rx.form(
-        rx.vstack(
-            rx.input(
-                placeholder="Nombre",
-                name="name",
+        rx.flex(
+            rx.flex(
+                rx.input(
+                    placeholder="Nombre",
+                    name="name",
+                ),
+                rx.input(
+                    placeholder="Apellidos",
+                    name="surname",
+                ),
+                rx.input(
+                    placeholder="Teléfono",
+                    name="phone_number",
+                ),
+                rx.input(
+                    placeholder="Email",
+                    name="email",
+                ),
+                rx.input(
+                    placeholder="Contraseña",
+                    name="password",
+                    type="password"
+                ),
+                rx.input(
+                    placeholder="Calle",
+                    name="address",
+                ),
+                rx.flex(
+                    rx.input(
+                        placeholder="Ciudad",
+                        name="city",
+                    ),
+                    rx.input(
+                        placeholder="Comunidad",
+                        name="autonomous_community",
+                    ),
+                    rx.input(
+                        placeholder="Código postal",
+                        name="postal_code",
+                    ),
+                    spacing="3",
+                    direction="row"
+                ),
+                direction="column",
+                spacing="3"
             ),
-            rx.input(
-                placeholder="Apellidos",
-                name="surname",
+            rx.flex(
+                rx.button("Registrarme", type="submit", on_click=RegisterState.change),
+                direction="column"
             ),
-            rx.input(
-                placeholder="Teléfono",
-                name="phone_number",
-            ),
-            rx.input(
-                placeholder="Email",
-                name="email",
-            ),
-            rx.input(
-                placeholder="Contraseña",
-                name="password",
-            ),
-            rx.button("Registrarme", type_="submit", on_click=RegisterState.change),
+            direction="column",
+            spacing="6"
         ),
         on_submit=RegisterState.handle_submit,
         reset_on_submit=True,
     )
+

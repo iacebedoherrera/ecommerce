@@ -6,7 +6,7 @@ from ecommerce.routes import Route
 import ecommerce.utils as utils
 
 @rx.page(
-    route=Route.INDEX, 
+    route=Route.INDEX.value, 
     title="I&N Shop"
 )
 def index() -> rx.Component:

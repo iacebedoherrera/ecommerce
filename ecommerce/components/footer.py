@@ -8,29 +8,32 @@ def footer() -> rx.Component:
     return rx.vstack(
         # Contacto
         rx.hstack(
-            rx.button(
+            rx.chakra.button(
                 "Envíos",
                 variant="unstyled"
             ),
-            rx.button(
+            rx.chakra.button(
                 "Devoluciones",
                 variant="unstyled"
             ),
-            rx.button(
+            rx.chakra.button(
                 "Contacto",
                 variant="unstyled"
-            )
+            ),
+            direction="row",
+            spacing="9"
         ),
         #TODO Icono
         rx.hstack(
-            rx.text("Icono")
+            rx.chakra.text("Icono")
         ),
         # Legal
         rx.hstack(
-            rx.text(
+            rx.chakra.text(
                 f"© 2023-2024 {const.SHOP_NAME}"
             )
         ),
+        align="center",
         bg = Color.FOOTER_BACKGROUND.value,
         width = "100%",
         color = TextColor.FOOTER.value
