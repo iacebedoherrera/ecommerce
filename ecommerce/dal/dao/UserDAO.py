@@ -19,3 +19,16 @@ class UserDAO:
     def find_all_users():
         with rx.session() as session:
             return session.exec(User).all()
+        
+    
+    def update_user(user_id: int, new_data: dict):
+        with rx.session() as session:
+            user: User = session.exec(User.select.where(User.id == user_id)).first()
+            if user:
+                for key, value in new_data.items():
+                    setattr(user, key, value)
+                
+                session.commit()
+                session.refresh(user)
+                return user
+    
