@@ -3,19 +3,19 @@ from ecommerce.styles.styles import Size
 
 
 def products_index() -> rx.Component:
-    return rx.hstack(
-        rx.vstack(
-            rx.button(
-                rx.image(
+    return rx.chakra.hstack(
+        rx.chakra.vstack(
+            rx.chakra.button(
+                rx.chakra.image(
                     src="/icons/men.avif",
                     height=Size.ULTRA_BIG.value
                 ),
                 variant="unstyled"
             )
         ),
-        rx.vstack(
-            rx.button(
-                rx.image(
+        rx.chakra.vstack(
+            rx.chakra.button(
+                rx.chakra.image(
                     src="/icons/women.avif",
                     height=Size.ULTRA_BIG.value
                 ),

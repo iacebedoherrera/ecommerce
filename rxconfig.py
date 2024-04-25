@@ -7,5 +7,5 @@ dotenv.load_dotenv()
 
 config = rx.Config(
     app_name="ecommerce",
-    db_url=os.environ.get("DATABASE_URL_DES")
+    db_url=os.environ.get("DATABASE_URL")
 )

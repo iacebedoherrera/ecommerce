@@ -112,7 +112,6 @@
 .spyproject
 .tox/
 .venv
-.web
 .webassets-cache
 /site
 ENV/
@@ -125,6 +124,8 @@ MANIFEST
 [Ss]cripts
 __pycache__/
 __pypackages__/
+alembic.ini
+alembic/
 build/
 celerybeat-schedule
 celerybeat.pid
@@ -163,5 +164,3 @@ var/
 venv.bak/
 venv/
 wheels/
-alembic/
-alembic.ini
