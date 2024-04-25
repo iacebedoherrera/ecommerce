@@ -6,13 +6,13 @@ from .fonts import Font, FontWeight
 # Constants
 MAX_WIDTH = "560px"
 
+
 # Sizes
 
 STYLESHEETS = [
     "https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap",
     "https://fonts.googleapis.com/css2?family=Comfortaa:wght@500&display=swap"
 ]
-
 
 class Size(Enum):
     ZERO = "0px !important"
@@ -22,19 +22,18 @@ class Size(Enum):
     LARGE = "1.5em"
     BIG = "2em"
     VERY_BIG = "4em"
+    ULTRA_BIG = "20em"
+
 
 # Styles
 
-
 BASE_STYLE = {
-    # Eliminar font_family y font_weight por defecto en Text, Box y Link
-    "font_family": Font.DEFAULT.value,
-    "font_weight": FontWeight.LIGHT.value,
     # Eliminar el !important en futuras versiones
-    "background_color": Color.BACKGROUND.value + "!important",
+    "background_color": Color.FOOTER_BACKGROUND.value + "!important",
     rx.Text: {
         "font_family": Font.DEFAULT.value,
-        "font_weight": FontWeight.LIGHT.value
+        "font_weight": FontWeight.LIGHT.value,
+        "color": TextColor.FOOTER
     },
     rx.Box: {
         "font_family": Font.DEFAULT.value,
@@ -65,28 +64,3 @@ BASE_STYLE = {
         "_hover": {}
     }
 }
-
-navbar_title_style = dict(
-    font_family=Font.LOGO.value,
-    font_weight=FontWeight.MEDIUM.value,
-    font_size=Size.LARGE.value
-)
-
-title_style = dict(
-    width="100%",
-    padding_top=Size.DEFAULT.value,
-    font_size=Size.LARGE.value
-)
-
-button_title_style = dict(
-    font_family=Font.TITLE.value,
-    font_weight=FontWeight.MEDIUM.value,
-    font_size=Size.DEFAULT.value,
-    color=TextColor.HEADER.value
-)
-
-button_body_style = dict(
-    font_weight=FontWeight.LIGHT.value,
-    font_size=Size.MEDIUM.value,
-    color=TextColor.BODY.value
-)

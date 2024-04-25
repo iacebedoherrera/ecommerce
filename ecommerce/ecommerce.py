@@ -1,16 +1,13 @@
-from rxconfig import config
 import reflex as rx
-from ecommerce.components.header import header
-
+from ecommerce.pages.index import index
+from ecommerce.api.userAPI import register_user, login_for_access_token
 
 class State(rx.State):
     pass
 
-@rx.page(route="/", title="I&N Shop")
-def index() -> rx.Component:
-    return header()
-
-
 # Create app instance and add index page.
 app = rx.App()
-app.add_page(index)
+
+# API Usuarios
+app.api.add_api_route("/users/register", register_user)
+#app.api.add_api_route("/users/login", login_for_access_token)
