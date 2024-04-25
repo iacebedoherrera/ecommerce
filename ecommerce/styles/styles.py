@@ -26,41 +26,24 @@ class Size(Enum):
 
 
 # Styles
-
 BASE_STYLE = {
-    # Eliminar el !important en futuras versiones
-    "background_color": Color.FOOTER_BACKGROUND.value + "!important",
-    rx.Text: {
-        "font_family": Font.DEFAULT.value,
-        "font_weight": FontWeight.LIGHT.value,
-        "color": TextColor.FOOTER
-    },
-    rx.Box: {
-        "font_family": Font.DEFAULT.value,
-        "font_weight": FontWeight.LIGHT.value
-    },
-    rx.Heading: {
-        "color": TextColor.HEADER.value,
-        "font_family": Font.TITLE.value,
-        "font_weight": FontWeight.MEDIUM.value
-    },
-    rx.Button: {
-        "width": "100%",
-        "height": "100%",
-        "padding": Size.SMALL.value,
-        "border_radius": Size.DEFAULT.value,
-        "color": TextColor.HEADER.value,
-        "background_color": Color.CONTENT.value,
-        "white_space": "normal",
-        "text_align": "start",
-        "_hover": {
-            "background_color": Color.SECONDARY.value
-        }
-    },
-    rx.Link: {
-        "font_family": Font.DEFAULT.value,
-        "font_weight": FontWeight.LIGHT.value,
-        "text_decoration": "none",
-        "_hover": {}
+    rx.divider: {
+        "color_scheme": "mint"
     }
 }
+
+BUTTON = {
+    "width": "100%",
+    "height": "100%",
+    "padding": Size.SMALL.value,
+    "border_radius": Size.SMALL.value,
+    "color": "#000000",
+    "background_color": "#83d3f4",
+    "white_space": "normal",
+    "text_align": "start",
+    "_hover": {
+        "background_color": Color.SECONDARY.value
+    }
+}
+
+
