@@ -6,15 +6,41 @@ import { EventLoopContext, StateContexts } from "/utils/context"
 import { Event, getBackendURL, getRefValue, getRefValues, isTrue } from "/utils/state"
 import { WifiOffIcon as LucideWifiOffIcon } from "lucide-react"
 import { keyframes } from "@emotion/react"
-import { Button as RadixThemesButton, Dialog as RadixThemesDialog, DropdownMenu as RadixThemesDropdownMenu, Flex as RadixThemesFlex, Heading as RadixThemesHeading, Link as RadixThemesLink, Separator as RadixThemesSeparator, Text as RadixThemesText, TextField as RadixThemesTextField } from "@radix-ui/themes"
+import { Button as RadixThemesButton, Dialog as RadixThemesDialog, DropdownMenu as RadixThemesDropdownMenu, Flex as RadixThemesFlex, Heading as RadixThemesHeading, Link as RadixThemesLink, Separator as RadixThemesSeparator, Text as RadixThemesText, TextField as RadixThemesTextField, Theme as RadixThemesTheme } from "@radix-ui/themes"
 import env from "/env.json"
 import Script from "next/script"
 import NextLink from "next/link"
-import { Button, HStack, Image as ChakraImage, Text, VStack } from "@chakra-ui/react"
+import { Button, Image as ChakraImage, Text } from "@chakra-ui/react"
 import { Root as RadixFormRoot } from "@radix-ui/react-form"
+import "@radix-ui/themes/styles.css"
+import theme from "/utils/theme.js"
 import NextHead from "next/head"
 
 
+
+export function Flex_17c4e5da16aa95542ff0d1cae9798fc6 () {
+  const state__product_state = useContext(StateContexts.state__product_state)
+
+
+
+  return (
+    <RadixThemesFlex align={`start`} direction={`column`} gap={`2`}>
+  {state__product_state.products.map((product, index_2491102c2805a2521c9c8e42b5efc93b) => (
+  <RadixThemesFlex align={`start`} direction={`column`} key={index_2491102c2805a2521c9c8e42b5efc93b} gap={`2`}>
+  <img>
+  {product.product_path}
+</img>
+  <RadixThemesText as={`p`}>
+  {product.product_name}
+</RadixThemesText>
+  <RadixThemesText as={`p`}>
+  {product.product.price}
+</RadixThemesText>
+</RadixThemesFlex>
+))}
+</RadixThemesFlex>
+  )
+}
 
 export function Root_865924382b3edfb69ea65db9df388303 () {
   const [addEvents, connectErrors] = useContext(EventLoopContext);
@@ -387,18 +413,7 @@ export default function Component() {
 </RadixThemesFlex>
 </RadixThemesFlex>
   <RadixThemesSeparator css={{"borderColor": "black", "colorScheme": "mint"}} size={`4`}/>
-  <HStack sx={{"paddingTop": "2em", "paddingBottom": "20em"}}>
-  <VStack>
-  <Button variant={`unstyled`}>
-  <ChakraImage src={`/icons/men.avif`} sx={{"height": "20em"}}/>
-</Button>
-</VStack>
-  <VStack>
-  <Button variant={`unstyled`}>
-  <ChakraImage src={`/icons/women.avif`} sx={{"height": "20em"}}/>
-</Button>
-</VStack>
-</HStack>
+  <Flex_17c4e5da16aa95542ff0d1cae9798fc6/>
   <RadixThemesFlex align={`center`} css={{"background": "#0C151D", "width": "100%", "color": "#FFFFFF"}} direction={`column`} gap={`2`}>
   <RadixThemesFlex align={`start`} direction={`row`} gap={`9`}>
   <Button variant={`unstyled`}>
@@ -425,7 +440,7 @@ export default function Component() {
 </RadixThemesFlex>
   <NextHead>
   <title>
-  {`I&N Shop`}
+  {`Ecommerce | Products/[Product Type]`}
 </title>
   <meta content={`favicon.ico`} property={`og:image`}/>
 </NextHead>
