@@ -43,11 +43,19 @@ class UserAPI:
     async def authenticate_user(self, email: str, password: str):
         user: User = UserDAO.find_user_by_email(email)
         if not user:
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="The user does not exist",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         if password == user.password:
             return user
         if not self.verify_password(password, user.password):
-            return False
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="The password is not correct",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         return user
 
 
@@ -101,6 +109,13 @@ class UserAPI:
     def register_user(self, user: User):
         # We apply the hash to the password before saving it
         user.password = self.get_password_hash(user.password)
-        UserDAO.insert(user)
+        try:
+            UserDAO.insert(user)
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="The user already exists in the system",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 

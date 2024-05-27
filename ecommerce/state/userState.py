@@ -41,7 +41,7 @@ class LoginState(rx.State):
             self.login_cookie = token.get("access_token")
             self.username = token.get("username")
         except Exception as e:
-            return rx.window_alert("Usuario o contraseña incorrectos")
+            return rx.window_alert(e)
         
     def log_out(self):
         return [rx.redirect(Route.INDEX.value),

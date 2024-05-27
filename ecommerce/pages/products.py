@@ -1,50 +1,59 @@
 import reflex as rx
 import os
-from urllib.parse import urlparse
 from ecommerce.routes import Route
 import ecommerce.const as const
 import ecommerce.utils as utils
 from ecommerce.components.header import header
 from ecommerce.components.footer import footer
-from ecommerce.dal.models.product import Product
-from ecommerce.dal.dao.ProductDAO import ProductDAO
 from ecommerce.api.ProductAPI import ProductAPI
+from typing import List
 
 
 PRODUCT_API = ProductAPI()
 
+class ProductDTO(rx.Base):
+    id: str
+    name: str
+    partnumber: str
+    family: str
+    model: str
+    color: str
+    size: str
+    price: str
 
 class ProductAttributes(rx.Base):
     product_path: str
     product_name: str
-    product: Product
+    product: ProductDTO
 
-class ProductState(rx.State):
-    products: list[ProductAttributes] = []
-    current_product: Product = Product()
+class ProductsState(rx.State):
+    products: List[ProductAttributes] = []
 
     @rx.var
-    def product_type(self) -> str:
+    def get_product_type(self) -> str:
         return self.router.page.params.get("product_type", "")
     
     async def update_products(self):
-        product_type: str = self.router.page.params.get("product_type", ".")
-        route: str = "assets/products/" + product_type
-        product_list: list[ProductAttributes] = []
-        for filename in os.listdir(route):
-            try:
-                product: Product = await PRODUCT_API.get_product_by_partnumber(filename)
-            except:
-                continue
-            new_route: ProductAttributes = ProductAttributes(product_path=os.path.join(product_type, filename), product_name=filename, product=product)
-            product_list.append(new_route)
-        self.products = product_list
+        if not self.products:
+            product_type: str = self.get_product_type
+            route: str = "assets/products/" + product_type
+            product_list: List[ProductAttributes] = []
+            for filename in os.listdir(route):
+                try:
+                    product: ProductDTO = await PRODUCT_API.get_product_by_partnumber(filename)
+                except:
+                    continue
+                product_path = os.path.join('/products', product_type, filename, filename) + "_01" + const.IMAGES_FORMAT
+                product_attributes: ProductAttributes = ProductAttributes(product_path=product_path, product_name=filename, product=product)
+                product_list.append(product_attributes)
+            self.products = product_list
+
         
 
 @rx.page(
     route=f"{Route.PRODUCTS.value}/[product_type]",
-    title=const.PRODUCTS.get(ProductState.product_type),
-    on_load=ProductState.update_products
+    title=const.PRODUCTS.get(ProductsState.get_product_type),
+    on_load=ProductsState.update_products
 )
 def products() -> rx.Component:
     return rx.vstack(
@@ -58,14 +67,20 @@ def products() -> rx.Component:
 
 def product_list() -> rx.Component:
     return rx.vstack(
-        rx.foreach(ProductState.products, create_product_view)
+        rx.grid(
+            rx.foreach(ProductsState.products, create_product_view),
+            columns="3",
+        )
     )
 
 
 def create_product_view(product: ProductAttributes):
     return rx.vstack(
-        rx.image(product.product_path),
-        rx.text(product.product_name),
-        rx.text(product.product.price)
+        rx.link(
+            rx.image(src=product.product_path, width="300px", height="auto"),
+            href=Route.PRODUCTS.value + "/" + ProductsState.get_product_type + "/" + product.product.partnumber
+        ),
+        rx.text(product.product.name),
+        rx.text(product.product.price + "€")
     )
 

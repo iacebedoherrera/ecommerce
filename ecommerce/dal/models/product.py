@@ -7,8 +7,8 @@ class Product(rx.Model, table=True):
     id: int = Field(default=None, primary_key=True)
     name: str
     partnumber: str
-    family: int
-    model: int
+    family: str
+    model: str
     color: str
     size: str
-    price: float
+    price: str
