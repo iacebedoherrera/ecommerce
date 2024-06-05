@@ -114,6 +114,7 @@ def header() -> rx.Component:
                             height=style.Size.LARGE.value,
                         ),
                         variant="ghost",
+                        href=Route.SHOPPING_CART.value
                     ),
                     padding_x=style.Size.MEDIUM.value,
                 ),
@@ -129,9 +130,11 @@ def header() -> rx.Component:
         # ! NAVBAR
         rx.hstack(
             rx.vstack(
-                rx.button(
-                    "Camisetas", style=style.BUTTON,
-                    on_click=rx.redirect(f"{Route.PRODUCTS.value}/tshirt")
+                rx.link(
+                    rx.button(
+                        "Camisetas", style=style.BUTTON
+                    ),
+                    href=f"{Route.PRODUCTS.value}/tshirt"
                 ),
                 padding_x=style.Size.BIG.value,
             ),

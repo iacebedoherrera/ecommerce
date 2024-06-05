@@ -6,7 +6,6 @@ from ecommerce.dal.models.product import Product
 from ecommerce.api.ProductAPI import ProductAPI
 from ecommerce.components.header import header
 from ecommerce.components.footer import footer
-from typing import List
 from ecommerce.state.shoppingState import ShoppingState
 
 
@@ -56,10 +55,27 @@ def product_info() -> rx.Component:
     return rx.vstack(
         rx.text(ProductState.product.name),
         rx.text(ProductState.product.price + "€"),
-        rx.button(
-            rx.icon(tag="shopping-cart"),
-            "Añadir a la cesta",
-            on_click=ShoppingState.add_product_to_shopping_cart(ProductState.product.id)
+        rx.dialog.root(
+            rx.dialog.trigger(
+                rx.button(
+                    rx.icon(tag="shopping-cart"),
+                    "Añadir a la cesta",
+                    on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.id)
+                )
+            ),
+            rx.dialog.content(
+                rx.dialog.close(
+                    rx.icon(tag="circle-x")
+                ),
+                rx.chakra.alert(
+                    rx.chakra.alert_icon(),
+                    rx.chakra.alert_title(
+                        "Artículo añadido al carrito"
+                    ),
+                    status="success",
+                ),
+                size="1"
+            )
         )
     )
 
