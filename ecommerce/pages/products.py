@@ -7,24 +7,16 @@ from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.api.ProductAPI import ProductAPI
 from typing import List
+from ecommerce.dal.models.product import Product
 
 
 PRODUCT_API = ProductAPI()
 
-class ProductDTO(rx.Base):
-    id: str
-    name: str
-    partnumber: str
-    family: str
-    model: str
-    color: str
-    size: str
-    price: str
 
 class ProductAttributes(rx.Base):
     product_path: str
     product_name: str
-    product: ProductDTO
+    product: Product
 
 class ProductsState(rx.State):
     products: List[ProductAttributes] = []
@@ -40,7 +32,7 @@ class ProductsState(rx.State):
             product_list: List[ProductAttributes] = []
             for filename in os.listdir(route):
                 try:
-                    product: ProductDTO = await PRODUCT_API.get_product_by_partnumber(filename)
+                    product: Product = await PRODUCT_API.get_product_by_partnumber(filename)
                 except:
                     continue
                 product_path = os.path.join('/products', product_type, filename, filename) + "_01" + const.IMAGES_FORMAT
