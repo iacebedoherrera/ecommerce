@@ -27,6 +27,53 @@ class Size(Enum):
 
 # Styles
 BASE_STYLE = {
+    ".carousel-container": {
+        "position": "relative",
+        "width": "100%",
+        "max-width": "600px",
+        "margin": "auto",
+        "overflow": "hidden"
+    },
+
+    ".prev, .next": {
+        "cursor": "pointer",
+        "position": "absolute",
+        "top": "50%",
+        "transform": "translateY(-50%)",
+        "padding": "10px",
+        "color": "black",
+        "font-weight": "bold",
+        "font-size": "18px",
+        "transition": "0.6s ease",
+        "border-radius": "0 3px 3px 0",
+        "z-index": "1"
+    },
+
+    ".next": {
+        "right": "0"
+    },
+
+    ".prev": {
+        "left": "0",
+        "right": "auto"
+    },
+
+    ".mySlides": {
+        "display": "none"
+    },
+
+    ".slideshow-container": {
+        "position": "relative",
+        "margin": "auto"
+    },
+
+    ".fade": {
+        "-webkit-animation-name": "fade",
+        "-webkit-animation-duration": "1.5s",
+        "animation-name": "fade",
+        "animation-duration": "1.5s"
+    },
+
     rx.divider: {
         "color_scheme": "mint"
     }

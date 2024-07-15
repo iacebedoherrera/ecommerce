@@ -4,6 +4,9 @@ from ecommerce.dal.models.user import Address
 from .UserAPI import UserAPI
 from ecommerce.dal.dao.UserDAO import UserDAO
 from ecommerce.dal.dao.AddressDAO import AddressDAO
+from fastapi import Path
+import os
+import ecommerce.const as const
 
 
 USER_API = UserAPI()
@@ -44,7 +47,10 @@ async def login_user(form_data: dict) -> dict:
     oauth_form = OauthForm(
         username=form_data.get("username"), password=form_data.get("password")
     )
-    return await USER_API.login_for_access_token(oauth_form)
+    try:
+        return await USER_API.login_for_access_token(oauth_form)
+    except Exception as e:
+        raise e
 
 
 async def get_address(id: int) -> Address:
@@ -67,3 +73,14 @@ def update_address(new_data: dict, address_id: int, user_id: int):
 
     address: Address = AddressDAO.update_address(address_id, new_data)
     return update_user(user_id, {"address_id": address.id})
+
+
+def get_product_images(product_type: str = Path(..., title="Tipo producto"),
+                       partnumber: str = Path(..., title="Partnumber")):
+    path = os.path.join(product_type, partnumber)
+    full_path = os.path.join(const.IMAGES_ROUTE, path)
+    if os.path.isdir(full_path):
+        image_paths = [os.path.join(path, f) for f in os.listdir(full_path) if os.path.isfile(os.path.join(full_path, f))]
+        return {"image_paths": image_paths}
+    else:
+        return {"message": "Ruta de imágenes no encontrada"}

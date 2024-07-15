@@ -15,7 +15,7 @@ class AddressDAO:
     # Find a user from the email
     def find_address_by_id(id: int):
         with rx.session() as session:
-            return session.exec(Address.select.where(Address.id == id)).first()
+            return session.exec(Address.select().where(Address.id == id)).first()
 
 
     def find_all_address():
@@ -25,7 +25,7 @@ class AddressDAO:
 
     def update_address(id: int, new_data: dict):
         with rx.session() as session:
-            address: Address = session.exec(Address.select.where(Address.id == id)).first()
+            address: Address = session.exec(Address.select().where(Address.id == id)).first()
             if address:
                 for key, value in new_data.items():
                     setattr(address, key, value)

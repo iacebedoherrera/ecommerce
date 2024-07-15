@@ -12,3 +12,6 @@ PRODUCTS: dict = {
     "tshirt":"Camisetas",
     "sweatshirt":"Sudaderas"
 }
+
+IMAGES_FORMAT = ".jpg"
+IMAGES_ROUTE = "assets/products/"
