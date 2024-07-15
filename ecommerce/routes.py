@@ -5,3 +5,4 @@ class Route(Enum):
     INDEX = "/"
     MY_ACCOUNT = "/my_account"
     PRODUCTS = "/products"
+    SHOPPING_CART = "/shopping_cart"
