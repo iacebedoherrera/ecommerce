@@ -5,5 +5,5 @@
 .web/
 __pycache__/
 alembic.ini
-.vscode
+.vscode/
 alembic
