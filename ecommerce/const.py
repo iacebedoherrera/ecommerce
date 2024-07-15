@@ -15,3 +15,6 @@ PRODUCTS: dict = {
 
 IMAGES_FORMAT = ".jpg"
 IMAGES_ROUTE = "assets/products/"
+
+#CONFIRMACION PAGO
+ORDER_CONFIRM = "Confirmación"

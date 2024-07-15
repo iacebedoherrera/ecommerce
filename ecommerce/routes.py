@@ -6,3 +6,4 @@ class Route(Enum):
     MY_ACCOUNT = "/my_account"
     PRODUCTS = "/products"
     SHOPPING_CART = "/shopping_cart"
+    CONFIRM_ORDER = "/order_confirm"

@@ -15,38 +15,39 @@ dotenv.load_dotenv()
 # Class that manages the login pop-up
 class LoginState(rx.State):
     show: bool = False
+    show_error: bool = False
     user: User = User(name="", surname="", email="", password="", 
                       phone_number="", address_id=None, disabled=False)
     address: Address = Address(address = "", city = "", autonomous_community = "", postal_code = "")
     login_cookie: str = rx.Cookie(
         name=const.LOG_IN_COOKIE_NAME, 
         max_age=const.ACCESS_TOKEN_DURATION,
-        secure=False,
-        same_site="none"
+        same_site="lax"
     )
     username: str = rx.Cookie(
         name=const.USERNAME_COOKIE_NAME,
         max_age=const.ACCESS_TOKEN_DURATION,
-        secure=False,
-        same_site="none"
+        same_site="lax"
     )
 
 
     def change(self):
         self.show = not (self.show)
 
+    def change_error(self):
+        self.show_error = not (self.show_error)
+
     async def log_in(self, form_data: dict):
         try:
             token: dict = await api.login_user(form_data)
             self.login_cookie = token.get("access_token")
             self.username = token.get("username")
-        except Exception as e:
-            return rx.window_alert(e)
+        except Exception:
+            self.show_error = not (self.show_error)
         
     def log_out(self):
-        return [rx.redirect(Route.INDEX.value),
-                rx.remove_cookie(const.LOG_IN_COOKIE_NAME),
-                rx.remove_cookie(const.USERNAME_COOKIE_NAME)]
+        self.login_cookie = ""
+        self.username = ""
     
     async def refresh_user(self):
         self.user = await api.get_user(self.login_cookie)

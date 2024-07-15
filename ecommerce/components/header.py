@@ -2,6 +2,7 @@ import reflex as rx
 import ecommerce.styles.styles as style
 from ecommerce.routes import Route
 from ecommerce.state.userState import LoginState, RegisterState
+from ecommerce import const
 
 
 
@@ -62,7 +63,12 @@ def header() -> rx.Component:
                                     "Mi cuenta", on_click=rx.redirect(Route.MY_ACCOUNT.value)
                                 ),
                                 rx.menu.item(
-                                    "Cerrar sesión", on_click=LoginState.log_out
+                                    "Cerrar sesión", on_click=[
+                                        LoginState.log_out(),
+                                        rx.remove_cookie(const.LOG_IN_COOKIE_NAME),
+                                        rx.remove_cookie(const.USERNAME_COOKIE_NAME), 
+                                        rx.redirect(Route.INDEX.value)
+                                    ]
                                 )
                             ),
                         ),
@@ -88,6 +94,26 @@ def header() -> rx.Component:
                     rx.dialog.root(
                         rx.dialog.content(
                             rx.center(
+                                rx.dialog.title(
+                                    rx.icon("circle-x", color="red", size=100)
+                                )
+                            ),
+                            rx.text("El usuario o contraseña no son correctos"),
+                            rx.flex(
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_error),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column"
+                            )
+                        ),
+                        open=LoginState.show_error
+                    ),
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.center(
                                 rx.dialog.title("Registrarme")
                             ),
                             register(),
@@ -98,7 +124,7 @@ def header() -> rx.Component:
                                         direction="column"
                                     )
                                 ),
-                                direction="row"
+                                direction="column"
                             ),
                         ),
                         open=RegisterState.show

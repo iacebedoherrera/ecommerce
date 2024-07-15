@@ -1,4 +1,5 @@
 import reflex as rx
+import os, dotenv
 from ecommerce.routes import Route
 import ecommerce.const as const
 import ecommerce.utils as utils
@@ -9,13 +10,16 @@ from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
 
 
+dotenv.load_dotenv()
+BACKEND_URL = os.environ.get("BACKEND_URL")
+
 PRODUCT_API = ProductAPI()
 
 
 class ProductState(rx.State):
     product: Product = Product()
 
-    @rx.var
+    @rx.cached_var
     def get_product_type(self) -> str:
         return self.router.page.params.get("product_type", "")
     
@@ -26,7 +30,7 @@ class ProductState(rx.State):
 
     @rx.background
     async def load_carousel(self):
-        return rx.call_script("carousel()")
+        return rx.call_script("carousel();")
 
 
 @rx.page(
@@ -98,15 +102,12 @@ def photos_carousel() -> rx.Component:
             """
             function carousel() {
                 var pathname = window.location.pathname;
-                console.log(pathname);
                 
                 var backendUrl = "http://localhost:8000";
                 var rutaImagenes = backendUrl + pathname.replace('/products', '/images');
+                console.log(rutaImagenes);
                 
-                console.log("Fetching images from: ", rutaImagenes);
-
                 $.get(rutaImagenes, function(data) {
-                    console.log("Response received: ", data);
                     if (data.image_paths) {
                         var imagePaths = data.image_paths;
                         var slideshowContainer = document.getElementById("slideshow-container");

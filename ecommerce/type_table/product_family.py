@@ -1,5 +1,3 @@
-from enum import Enum
-
 
 class Family:
     _family = {

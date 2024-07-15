@@ -1,0 +1,44 @@
+import reflex as rx
+from ecommerce.routes import Route
+import ecommerce.const as const
+import ecommerce.utils as utils
+from ecommerce.components.header import header
+from ecommerce.components.footer import footer
+from ecommerce.state.shoppingState import ShoppingState
+
+
+
+class ConfirmOrderState(rx.State):
+    order_id: int
+
+    def get_order_id(self):
+        self.order_id = self.router.page.params.get("order_id", "")
+
+@rx.page(
+    route=f"{Route.CONFIRM_ORDER.value}/[order_id]",
+    title=const.ORDER_CONFIRM,
+    on_load=ShoppingState.clean_shopping_cart
+)
+def confirm_order() -> rx.Component:
+    return rx.vstack(
+        utils.lang(),
+        header(),
+        rx.divider(border_color="black"),
+        confirm(),
+        footer()
+    )
+
+
+def confirm() -> rx.Component:
+    return rx.flex(
+        rx.icon("circle-check-big", color="green", size=150),
+        rx.text(
+            "¡Enhorabuena! Has realizado tu compra con éxito"
+        ),
+        rx.text(
+            f"Tu código de pedido es: {ConfirmOrderState.order_id}"
+        ),
+        direction="column",
+        align="center",
+        width="100%"
+    )
