@@ -7,13 +7,14 @@ from ecommerce.dal.dao.AddressDAO import AddressDAO
 import dotenv
 from ecommerce.api import api
 from ecommerce.routes import Route
+from reflex_google_auth import GoogleAuthState, require_google_login
 
 
 dotenv.load_dotenv()
 
 
 # Class that manages the login pop-up
-class LoginState(rx.State):
+class LoginState(GoogleAuthState):
     show: bool = False
     show_error: bool = False
     user: User = User(name="", surname="", email="", password="", 
@@ -44,6 +45,26 @@ class LoginState(rx.State):
             self.username = token.get("username")
         except Exception:
             self.show_error = not (self.show_error)
+
+    async def log_in_google(self, data):
+        if not self.tokeninfo:
+            return rx.redirect(f"{Route.PRODUCTS.value}/tshirt")
+        user = UserDAO.find_user_by_email(self.tokeninfo["email"])
+        name, surname = self.tokeninfo["name"].split(' ', 1)
+        if not user:
+            form_data = {
+                "name": name,
+                "surname": surname,
+                "email": self.tokeninfo["email"],
+                "password": "",
+                "address_id": "",
+                "phone_number": ""
+            }
+            await api.register_user(form_data)
+
+        self.login_cookie = self.tokeninfo["sub"]
+        self.username = name
+        self.change()
         
     def log_out(self):
         self.login_cookie = ""

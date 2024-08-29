@@ -76,13 +76,15 @@ BASE_STYLE = {
 
     rx.divider: {
         "color_scheme": "mint"
+    },
+
+    rx.flex: {
+        "background_color": "white"
     }
 }
 
 BUTTON = {
     "width": "100%",
-    "height": "100%",
-    "padding": Size.SMALL.value,
     "border_radius": Size.SMALL.value,
     "color": "#000000",
     "background_color": "#83d3f4",

@@ -4,6 +4,7 @@ from ecommerce.dal.models.product import Product
 from ecommerce.api.ProductAPI import ProductAPI
 from ecommerce.type_table.product_family import Family
 from ecommerce.routes import Route
+from ecommerce.type_table.product_size import Size
 
 
 PRODUCT_API = ProductAPI()
@@ -20,14 +21,18 @@ class ShoppingDataPaypal(rx.Base):
 
 # Class that manages the shopping cart
 class ShoppingState(rx.State):
+    sizes: list[str] = ["XS", "S", "M", "L", "XL"]
+    size: str = "S"
     products: dict[int, ShoppingCartProduct] = {}
     products_list: list[list] = []
     total_amount = 0.0
     paypal_products: str = rx.LocalStorage(name="products")
     paypal_amount: str = rx.LocalStorage(name="amount")
 
-    async def add_product_to_shopping_cart(self, id: int):
-        product: Product = await PRODUCT_API.get_product_by_id(id)
+    async def add_product_to_shopping_cart(self, partnumber: str):
+        new_size = Size.get_id(self.size)
+        partnumber = partnumber[:-2] + new_size
+        product: Product = await PRODUCT_API.get_product_by_partnumber(partnumber)
         if self.products.get(product.id):
             self.products.get(product.id).quantity += 1
         else:
@@ -45,6 +50,7 @@ class ShoppingState(rx.State):
         for shoppingCartProduct in self.products.values():
             product: list = []
             product.append(shoppingCartProduct.product.name)
+            product.append(Size.get_size(shoppingCartProduct.product.size))
             product.append(f"{shoppingCartProduct.product.price}€")
             product.append(shoppingCartProduct.quantity)
             product.append(f"{float(shoppingCartProduct.product.price) * shoppingCartProduct.quantity}€")
@@ -52,6 +58,7 @@ class ShoppingState(rx.State):
 
         total_amount_row: list = []
         total_amount_row.append("PRECIO TOTAL")
+        total_amount_row.append("")
         total_amount_row.append("")
         total_amount_row.append("")
         total_amount_row.append(f"{float(self.total_amount)}€")
@@ -67,10 +74,10 @@ class ShoppingState(rx.State):
         self.paypal_products = json.dumps(products)
         self.paypal_amount = self.total_amount
 
-    def update_product_qty(self, product_name: str, updated_qty: int):
+    def update_product_qty(self, product_name: str, product_size: str, updated_qty: int):
         for id in self.products.keys():
             product = self.products.get(id)
-            if product.product.name == product_name:
+            if product.product.name == product_name and product.product.size == Size.get_id(product_size):
                 if updated_qty > 0:
                     self.total_amount += product.product.price
                     product.quantity += updated_qty
@@ -83,9 +90,9 @@ class ShoppingState(rx.State):
                 break
 
         for product in self.products_list:
-            if product[2] == product_name:
-                product[2] += updated_qty
-                if product[2] == 0:
+            if product[0] == product_name and product[1] == product_size:
+                product[3] += updated_qty
+                if product[3] == 0:
                     index = self.products_list.index(product)
                     self.products_list.pop(index)
                 break
@@ -98,6 +105,3 @@ class ShoppingState(rx.State):
         self.products_list.clear()
         self.total_amount = 0.0
 
-    
-    
-    

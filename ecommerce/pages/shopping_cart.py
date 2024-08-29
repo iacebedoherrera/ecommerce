@@ -6,6 +6,7 @@ import ecommerce.utils as utils
 from ecommerce.routes import Route
 from ecommerce.state.shoppingState import ShoppingState
 from ecommerce.state.userState import LoginState
+from ecommerce.styles.styles import Size
 
 
 dotenv.load_dotenv()
@@ -18,26 +19,46 @@ BACKEND_URL = os.environ.get("BACKEND_URL")
     on_load=[ShoppingState.load_shopping_cart, ShoppingState.save_paypal_data]
 )
 def shopping_cart() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         utils.lang(),
         header(),
-        rx.divider(border_color="black"),
         rx.cond(
             ShoppingState.products_list.length() > 1,
             show_checkout(),
-            rx.text("Tu carrito aún está vacío. Corre a comprar!")
+            show_go_shopping()
         ),
-        footer() 
+        footer(),
+        direction="column",
+        position="relative",
+        min_height="100vh"
+    )
+
+def show_go_shopping() -> rx.Component:
+    return rx.flex(
+        rx.image(src="/icons/empty_trolley.png"),
+        rx.text("Tu carrito aún está vacío. Corre a comprar!"),
+        direction="column",
+        align="center",
+        spacing="7",
+        padding_bottom=Size.BIG.value
     )
 
 def show_checkout() -> rx.Component:
-    return rx.hstack(
+    return rx.flex(
         show_products_in_shopping_cart(),
         rx.cond(
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
-            show_payment(),
+            rx.cond(
+                LoginState.user.address_id != "" and LoginState.user.phone_number != "",
+                show_payment(),
+                show_review_user_data()
+            ),
             rx.text("Debes iniciar sesión para poder realizar tu compra")
-        )
+        ),
+        direction="column",
+        align="center",
+        spacing="8",
+        padding_bottom=Size.BIG.value
     )
 
 def show_products_in_shopping_cart() -> rx.Component:
@@ -45,6 +66,7 @@ def show_products_in_shopping_cart() -> rx.Component:
         rx.table.header(
             rx.table.row(
                 rx.table.column_header_cell("Producto"),
+                rx.table.column_header_cell("Talla"),
                 rx.table.column_header_cell("Precio unitario"),
                 rx.table.column_header_cell("Cantidad"),
                 rx.table.column_header_cell("Precio total artículo")
@@ -60,18 +82,20 @@ def show_product(product_view: list) -> rx.Component:
     return rx.table.row(
         rx.table.cell(product_view[0]),
         rx.table.cell(product_view[1]),
+        rx.table.cell(product_view[2]),
         rx.table.cell(
             rx.cond(
                 product_view[0] != "PRECIO TOTAL",
                 rx.flex(
-                    rx.icon("circle-minus", on_click=ShoppingState.update_product_qty(product_view[0], -1)),
-                    product_view[2],
-                    rx.icon("circle-plus", on_click=ShoppingState.update_product_qty(product_view[0], 1)),
-                    direction="row"
+                    rx.icon("circle-minus", on_click=ShoppingState.update_product_qty(product_view[0], product_view[1], -1)),
+                    product_view[3],
+                    rx.icon("circle-plus", on_click=ShoppingState.update_product_qty(product_view[0], product_view[1], 1)),
+                    direction="row",
+                    spacing="2"
                 )
             )
         ),
-        rx.table.cell(product_view[3])
+        rx.table.cell(product_view[4])
     )
 
 def show_payment() -> rx.Component:
@@ -88,7 +112,16 @@ def show_payment() -> rx.Component:
             custom_attrs={"data-sdk-integration-source": "developer-studio"},
             on_ready=rx.call_script(
                 "paypalButton();",
-                #callback=ShoppingState.get_order_result
             )
+        )
+    )
+
+
+def show_review_user_data() -> rx.Component:
+    return rx.flex(
+        rx.text("Tienes que completar todos los datos de usuario antes de finalizar con el pago."),
+        rx.button(
+            "Mis datos",
+            on_click=rx.redirect(Route.MY_ACCOUNT.value)
         )
     )
