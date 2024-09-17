@@ -8,19 +8,22 @@ def footer() -> rx.Component:
     return rx.flex(
         # Contacto
         rx.flex(
-            rx.chakra.button(
+            rx.button(
                 "Envíos",
-                variant="unstyled",
+                color="white",
+                variant="ghost",
                 on_click=rx.redirect(Route.SHIPPINGS.value)
             ),
-            rx.chakra.button(
+            rx.button(
                 "Devoluciones",
-                variant="unstyled",
+                color="white",
+                variant="ghost",
                 on_click=rx.redirect(Route.RETURNS.value)
             ),
-            rx.chakra.button(
+            rx.button(
                 "Contacto",
-                variant="unstyled",
+                color="white",
+                variant="ghost",
                 on_click=rx.redirect(Route.CONTACT.value)
             ),
             direction="row",

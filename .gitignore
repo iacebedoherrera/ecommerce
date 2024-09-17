@@ -9,3 +9,4 @@ __pycache__/
 alembic
 alembic.ini
 assets/external/
+*.Identifier

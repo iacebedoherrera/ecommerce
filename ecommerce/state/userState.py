@@ -91,7 +91,12 @@ class LoginState(GoogleAuthState):
         if address is not None:
             self.address = address
             return rx.redirect(Route.MY_ACCOUNT.value)
-
+        
+    def no_mandatory_attribute(self):
+        if self.user.address_id is None or self.user.phone_number == "":
+            return True
+        return False
+ 
 
 
 # Class that manages the register pop-up

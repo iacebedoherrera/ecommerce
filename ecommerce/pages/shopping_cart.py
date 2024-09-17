@@ -49,9 +49,9 @@ def show_checkout() -> rx.Component:
         rx.cond(
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
             rx.cond(
-                LoginState.user.address_id != "" and LoginState.user.phone_number != "",
-                show_payment(),
-                show_review_user_data()
+                LoginState.no_mandatory_attribute(),
+                show_review_user_data(),
+                show_payment()
             ),
             rx.text("Debes iniciar sesión para poder realizar tu compra")
         ),

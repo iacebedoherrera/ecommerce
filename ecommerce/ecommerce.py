@@ -10,7 +10,11 @@ class State(rx.State):
 
 # Create app instance and add index page.
 app = rx.App(
-    style=styles.BASE_STYLE
+    style=styles.BASE_STYLE,
+    theme=rx.theme(
+        appearance="light",
+        has_background=True
+    )
 )
 
 

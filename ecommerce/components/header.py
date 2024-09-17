@@ -258,7 +258,7 @@ def header() -> rx.Component:
             width="100%",
             min_height="50px"
         ),
-        rx.divider(border_color="black", width="100%"),
+        rx.divider(width="100%"),
         direction="column",
         margin_bottom = Size.BIG.value,
         width="100%"
