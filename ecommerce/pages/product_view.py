@@ -8,6 +8,7 @@ from ecommerce.api.ProductAPI import ProductAPI
 from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
+from ecommerce.styles.styles import Size
 
 
 dotenv.load_dotenv()
@@ -19,7 +20,7 @@ PRODUCT_API = ProductAPI()
 class ProductState(rx.State):
     product: Product = Product()
 
-    @rx.cached_var
+    @rx.var(cache=True)
     def get_product_type(self) -> str:
         return self.router.page.params.get("product_type", "")
     
@@ -39,33 +40,75 @@ class ProductState(rx.State):
     on_load=[ProductState.update_product, ProductState.load_carousel]
 )
 def product_view() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         utils.lang(),
         header(),
-        rx.divider(border_color="black"),
-        product_detail(),
-        footer()
+        rx.desktop_only(
+            product_detail()
+        ),
+        rx.mobile_and_tablet(
+            product_detail_for_mobile(),
+            width="100%"
+        ),
+        footer(),
+        direction="column",
+        position="relative",
+        min_height="100vh"
     )
 
 
 def product_detail() -> rx.Component:
-    return rx.hstack(
+    return rx.flex(
         photos_carousel(),
-        product_info()
+        product_info(),
+        direction="row",
+        align="center",
+        justify="center",
+        padding_top=Size.BIG.value,
+        padding_bottom=Size.BIG.value,
+        gap="10em",
+        width="100%"
     )
 
+def product_detail_for_mobile() -> rx.Component:
+    return rx.flex(
+        photos_carousel(),
+        product_info(),
+        direction="column",
+        align="center",
+        padding_top=Size.BIG.value,
+        padding_bottom=Size.BIG.value,
+        width="90%"
+    )
 
 def product_info() -> rx.Component:
-    return rx.vstack(
-        rx.text(ProductState.product.name),
-        rx.text(ProductState.product.price + "€"),
+    return rx.flex(
+        rx.flex(
+            rx.text(ProductState.product.name, size="7", weight="bold"),
+            rx.text(ProductState.product.price + " €", size="5"),
+            direction="column",
+            align="2"
+        ),
+        rx.flex(  
+            rx.text("Talla: "),    
+            rx.select(
+                ShoppingState.sizes,
+                default_value=ShoppingState.size,
+                on_change=ShoppingState.set_size
+            ),
+            direction="row",
+            align="center",
+            spacing="6"
+        ),
         rx.dialog.root(
             rx.dialog.trigger(
                 rx.button(
                     rx.icon(tag="shopping-cart"),
                     "Añadir a la cesta",
-                    on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.id)
-                )
+                    color_scheme="green",
+                    on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
+                ),
+                padding_top="3em"
             ),
             rx.dialog.content(
                 rx.dialog.close(
@@ -80,12 +123,14 @@ def product_info() -> rx.Component:
                 ),
                 size="1"
             )
-        )
+        ),
+        direction="column",
+        spacing="5"
     )
 
 
 def photos_carousel() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         rx.html(
             """
             <div class="carousel-container">

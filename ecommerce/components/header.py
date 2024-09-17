@@ -3,40 +3,60 @@ import ecommerce.styles.styles as style
 from ecommerce.routes import Route
 from ecommerce.state.userState import LoginState, RegisterState
 from ecommerce import const
+from ecommerce.styles.styles import Size
+import reflex_google_auth
 
 
 
 def header() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         # ! HEADER
-        rx.hstack(
+        rx.flex(
             # TODO Icono de la tienda
-            rx.vstack(rx.text("Icono"), position="absolute", left="4em"),
-            # TODO Letras chulas con el nombre de la tienda
-            rx.vstack(
+            rx.flex(
                 rx.link(
-                    rx.heading("I&N Shop"), padding_x=style.Size.SMALL.value,
+                    rx.image(
+                        src="/icons/logo_left.png"
+                    ),
                     href=Route.INDEX.value
+                ),
+                position="absolute",
+                left="3em"
+            ),
+            rx.flex(
+                rx.desktop_only(
+                    rx.flex(
+                        rx.link(
+                            rx.image(
+                                src="/icons/logo.png"
+                            ), 
+                            href=Route.INDEX.value
+                        ),
+                        align="center",
+                        padding_x=style.Size.SMALL.value,
+                    )
                 )
             ),
             # Iconos de idioma, perfil y cesta
-            rx.hstack(
+            rx.flex(
                 # Icono del idioma
                 rx.vstack(
                     rx.menu.root(
                         rx.menu.trigger(
-                            rx.chakra.image(
+                            rx.image(
                                 src="/icons/spainIcon.png",
                                 width=style.Size.LARGE.value,
                                 height=style.Size.LARGE.value,
                             )
                         )
                     ),
-                    padding_right=style.Size.MEDIUM.value,
                 ),
                 # Nombre de usuario en caso de estar logueado
-                rx.vstack(
-                    rx.text(LoginState.username)
+                rx.cond(
+                    LoginState.username != "",
+                    rx.vstack(
+                        rx.text(LoginState.username)
+                    ),
                 ),
                 # Icono de inicio de sesion
                 rx.vstack(
@@ -87,6 +107,30 @@ def header() -> rx.Component:
                                     )
                                 ),
                                 direction="column"
+                            ),
+                            rx.flex(
+                                rx.divider(),
+                                margin_top="20px",
+                                margin_bottom="20px"
+                            ),
+                            rx.flex(
+                                rx.box(
+                                    reflex_google_auth.google_oauth_provider(
+                                        reflex_google_auth.google_login(
+                                            on_success=[
+                                                reflex_google_auth.GoogleAuthState.on_success,
+                                                LoginState.log_in_google
+                                            ],
+                                        ),
+                                    ),
+                                    box_shadow="rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",  # noqa
+                                    opacity="0.7",
+                                    overflow="hidden",
+                                    border_radius="10px",
+                                    width="200px",
+                                ),
+                                direction="column",
+                                align="center",
                             )
                         ),
                         open=LoginState.show
@@ -129,7 +173,6 @@ def header() -> rx.Component:
                         ),
                         open=RegisterState.show
                     ),
-                    padding_x=style.Size.MEDIUM.value,
                 ),
                 # Icono de la cesta
                 rx.vstack(
@@ -142,40 +185,83 @@ def header() -> rx.Component:
                         variant="ghost",
                         href=Route.SHOPPING_CART.value
                     ),
-                    padding_x=style.Size.MEDIUM.value,
                 ),
+                direction="row",
                 position="absolute",
-                right="4em",
+                spacing="7",
+                right="3em"
             ),
+            direction="row",
             width="100%",
             justify="center",
-            padding_top=style.Size.LARGE.value,
-            padding_bottom=style.Size.MEDIUM.value,
+            align="center",
+            min_height="100px",
         ),
         rx.divider(border_color="black", width="100%"),
         # ! NAVBAR
-        rx.hstack(
-            rx.vstack(
-                rx.link(
-                    rx.button(
-                        "Camisetas", style=style.BUTTON
+        rx.flex(
+            rx.mobile_and_tablet(
+                rx.menu.root(
+                    rx.menu.trigger(
+                        rx.button("Productos", variant="soft", size="2", style=style.BUTTON),
                     ),
-                    href=f"{Route.PRODUCTS.value}/tshirt"
+                    rx.menu.content(
+                        rx.menu.item("Camisetas", on_click=rx.redirect(f"{Route.PRODUCTS.value}/tshirt")),
+                        rx.menu.separator(),
+                        rx.menu.item("Sudaderas", on_click=rx.redirect(Route.PRODUCTS.value)),
+                        rx.menu.separator(),
+                        rx.menu.item("Pantalones"),
+                        rx.menu.separator(),
+                        rx.menu.item("Accesorios"),
+                        size="2",
+                    ),
+                )
+            ),
+            rx.desktop_only(
+                rx.flex(
+                    rx.link(
+                        rx.button("Camisetas", style=style.BUTTON),
+                        href=f"{Route.PRODUCTS.value}/tshirt"
+                    ),
+                    rx.center(
+                        rx.divider(orientation="vertical", border_color="black"),
+                        height="2em",
+                    ),
+                    rx.link(
+                        rx.button("Sudaderas", style=style.BUTTON),
+                    ),
+                    rx.center(
+                        rx.divider(orientation="vertical", border_color="black"),
+                        height="2em",
+                    ),
+                    rx.link(
+                        rx.button("Pantalones", style=style.BUTTON),
+                    ),
+                    rx.center(
+                        rx.divider(orientation="vertical", border_color="black"),
+                        height="2em",
+                    ),
+                    rx.link(
+                        rx.button("Accesorios", style=style.BUTTON),
+                    ),
+                    direction="row",
+                    align="center",
+                    justify="center",
+                    spacing="7",
+                    width="100%"
                 ),
-                padding_x=style.Size.BIG.value,
             ),
-            rx.center(
-                rx.divider(orientation="vertical", border_color="black"),
-                height="2em",
-            ),
-            rx.vstack(
-                rx.button("Pantalones", style=style.BUTTON),
-                padding_x=style.Size.BIG.value,
-            ),
+            direction="row",
+            align="center",
             justify="center",
-            width="100%"
+            spacing="7",
+            width="100%",
+            min_height="50px"
         ),
-        width="100%",
+        rx.divider(width="100%"),
+        direction="column",
+        margin_bottom = Size.BIG.value,
+        width="100%"
     )
 
 

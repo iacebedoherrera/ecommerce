@@ -8,6 +8,7 @@ from ecommerce.components.footer import footer
 from ecommerce.api.ProductAPI import ProductAPI
 from typing import List
 from ecommerce.dal.models.product import Product
+from ecommerce.styles.styles import Size
 
 
 PRODUCT_API = ProductAPI()
@@ -48,31 +49,41 @@ class ProductsState(rx.State):
     on_load=ProductsState.update_products
 )
 def products() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         utils.lang(),
         header(),
-        rx.divider(border_color="black"),
         product_list(),
-        footer()
+        footer(),
+        direction="column",
+        position="relative",
+        min_height="100vh"
     )
 
 
 def product_list() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         rx.grid(
             rx.foreach(ProductsState.products, create_product_view),
-            columns="3",
-        )
+            columns="2",
+            spacing="8",
+            width="80%"
+        ),
+        direction="column",
+        align="center",
+        width="100%",
+        padding_bottom=Size.BIG.value
     )
 
 
 def create_product_view(product: ProductAttributes):
-    return rx.vstack(
+    return rx.flex(
         rx.link(
             rx.image(src=product.product_path, width="300px", height="auto"),
             href=Route.PRODUCTS.value + "/" + ProductsState.get_product_type + "/" + product.product.partnumber
         ),
         rx.text(product.product.name),
-        rx.text(product.product.price + "€")
+        rx.text(product.product.price + " €"),
+        direction="column",
+        align="center"
     )
 

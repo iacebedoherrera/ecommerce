@@ -5,6 +5,7 @@ import ecommerce.utils as utils
 from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
+from ecommerce.styles.styles import Size
 
 
 
@@ -20,12 +21,14 @@ class ConfirmOrderState(rx.State):
     on_load=ShoppingState.clean_shopping_cart
 )
 def confirm_order() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         utils.lang(),
         header(),
-        rx.divider(border_color="black"),
         confirm(),
-        footer()
+        footer(),
+        direction="column",
+        position="relative",
+        min_height="100vh"
     )
 
 
@@ -40,5 +43,6 @@ def confirm() -> rx.Component:
         ),
         direction="column",
         align="center",
-        width="100%"
+        width="100%",
+        padding_bottom=Size.BIG.value
     )

@@ -1,7 +1,6 @@
 import reflex as rx
 from enum import Enum
-from .colors import Color, TextColor
-from .fonts import Font, FontWeight
+from .colors import Color
 
 # Constants
 MAX_WIDTH = "560px"
@@ -65,24 +64,12 @@ BASE_STYLE = {
     ".slideshow-container": {
         "position": "relative",
         "margin": "auto"
-    },
-
-    ".fade": {
-        "-webkit-animation-name": "fade",
-        "-webkit-animation-duration": "1.5s",
-        "animation-name": "fade",
-        "animation-duration": "1.5s"
-    },
-
-    rx.divider: {
-        "color_scheme": "mint"
     }
+
 }
 
 BUTTON = {
     "width": "100%",
-    "height": "100%",
-    "padding": Size.SMALL.value,
     "border_radius": Size.SMALL.value,
     "color": "#000000",
     "background_color": "#83d3f4",
