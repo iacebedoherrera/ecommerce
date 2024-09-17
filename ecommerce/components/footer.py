@@ -1,40 +1,67 @@
 import reflex as rx
-from ecommerce.styles.styles import Size
 from ecommerce import const
 from ecommerce.styles.colors import Color, TextColor
-import ecommerce.styles.styles as Styles
+from ecommerce.routes import Route
+
 
 def footer() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         # Contacto
-        rx.hstack(
-            rx.chakra.button(
+        rx.flex(
+            rx.button(
                 "Envíos",
-                variant="unstyled"
+                color="white",
+                variant="ghost",
+                on_click=rx.redirect(Route.SHIPPINGS.value)
             ),
-            rx.chakra.button(
+            rx.button(
                 "Devoluciones",
-                variant="unstyled"
+                color="white",
+                variant="ghost",
+                on_click=rx.redirect(Route.RETURNS.value)
             ),
-            rx.chakra.button(
+            rx.button(
                 "Contacto",
-                variant="unstyled"
+                color="white",
+                variant="ghost",
+                on_click=rx.redirect(Route.CONTACT.value)
             ),
             direction="row",
-            spacing="9"
+            spacing="9",
+            margin_top="15px",
+            bg = Color.FOOTER_BACKGROUND.value,
         ),
-        #TODO Icono
-        rx.hstack(
-            rx.chakra.text("Icono")
+        # Iconos
+        rx.flex(
+            # Icono
+            rx.image(
+                src="/icons/logo_footer.png"
+            ),
+            rx.image(
+                src="/icons/paypal.png",
+                on_click=rx.redirect(Route.PAYPAL.value, external=True)
+            ),
+            rx.image(
+                src="/icons/reflex.png",
+                on_click=rx.redirect(Route.REFLEX.value, external=True)
+            ),
+            direction="row",
+            spacing="9",
+            bg = Color.FOOTER_BACKGROUND.value,
         ),
         # Legal
-        rx.hstack(
-            rx.chakra.text(
+        rx.flex(
+            rx.text(
                 f"© 2023-2024 {const.SHOP_NAME}"
-            )
+            ),
+            margin_bottom="15px",
+            bg = Color.FOOTER_BACKGROUND.value,
         ),
+        direction = "column",
+        spacing="6",
         align="center",
         bg = Color.FOOTER_BACKGROUND.value,
-        width = "100%",
-        color = TextColor.FOOTER.value
+        color = TextColor.FOOTER.value,
+        margin_top="auto",
+        width = "100%"
     )

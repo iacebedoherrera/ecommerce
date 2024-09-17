@@ -15,51 +15,51 @@ from ecommerce.dal.models.user import User, Address
     on_load=LoginState.refresh_user
 )
 def my_account() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         utils.lang(),
         header(),
-        rx.divider(border_color="black"),
         user_info(),
-        footer()    
+        footer(),
+        margin="0",
+        direction="column",
+        min_height="100vh"
     )
 
 
 def user_info() -> rx.Component:
-    return rx.vstack(
+    return rx.flex(
         #! TITULO
-        rx.vstack(
+        rx.flex(
             rx.heading("Mi cuenta"),
         ),
-        rx.hstack(
+        rx.flex(
             rx.divider(height="2px", color_scheme="mint"),
             width="60%"
         ),
         #! USUARIO
-        rx.vstack(
-            #! Formulario datos usuario
+        rx.flex(
             user_data_form(LoginState.user),
             spacing="5",
             align="center",
             width="60%"
         ),
-        rx.hstack(
+        rx.flex(
             rx.divider(height="2px", color_scheme="mint"),
-            width="40%",
-            padding_top=Size.BIG.value,
-            padding_bottom=Size.LARGE.value
+            width="40%"
         ),
         #! DIRECCION
-        rx.vstack(
-            #! Formulario direccion
+        rx.flex(
             address_data_form(LoginState.address, LoginState.user.id),
             spacing="5",
             align="center",
             width="60%"
         ),
+        direction="column",
         align="center",
+        spacing="5",
         width="100%",
         padding_top=Size.MEDIUM.value,
-        padding_bottom=Size.LARGE.value
+        padding_bottom=Size.BIG.value
     )
 
 
@@ -132,6 +132,7 @@ def user_data_form(user: User):
                 direction="column"
             ),
             direction="column",
+            align="center",
             spacing="6"
         ),
         on_submit=lambda form_data: LoginState.update_user(form_data, user.id),
@@ -195,6 +196,7 @@ def address_data_form(address: Address, user_id: int):
                 direction="column"
             ),
             direction="column",
+            align="center",
             spacing="6"
         ),
         on_submit=lambda form_data: LoginState.update_address(form_data, address.id, user_id),

@@ -1,5 +1,5 @@
 # COMUNES
-SHOP_NAME = "I&N Shop"
+SHOP_NAME = "INUsual"
 
 # COOKIES
 ALGORITHM = "HS256"
@@ -16,5 +16,14 @@ PRODUCTS: dict = {
 IMAGES_FORMAT = ".jpg"
 IMAGES_ROUTE = "assets/products/"
 
-#CONFIRMACION PAGO
+# CONFIRMACION PAGO
 ORDER_CONFIRM = "Confirmación"
+
+# ENVIOS
+SHIPPINGS = "Envíos"
+
+# DEVOLUCIONES
+RETURNS = "Devoluciones"
+
+# CONTACTO
+CONTACT = "Contacto"

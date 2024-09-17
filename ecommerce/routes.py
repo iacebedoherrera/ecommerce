@@ -7,3 +7,9 @@ class Route(Enum):
     PRODUCTS = "/products"
     SHOPPING_CART = "/shopping_cart"
     CONFIRM_ORDER = "/order_confirm"
+    SHIPPINGS = "/shippings"
+    RETURNS = "/returns"
+    CONTACT = "/contact"
+
+    PAYPAL = "https://www.paypal.com/es/home"
+    REFLEX = "https://reflex.dev/"
