@@ -1,3 +1,4 @@
+*.Identifier
 *.db
 *.py[cod]
 .env
@@ -9,4 +10,3 @@ __pycache__/
 alembic
 alembic.ini
 assets/external/
-*.Identifier
