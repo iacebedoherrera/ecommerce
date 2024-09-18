@@ -148,7 +148,7 @@ def photos_carousel() -> rx.Component:
             function carousel() {
                 var pathname = window.location.pathname;
                 
-                var backendUrl = "http://localhost:8000";
+                var backendUrl = "https://ecommerce-f8v1.onrender.com";
                 var rutaImagenes = backendUrl + pathname.replace('/products', '/images');
                 console.log(rutaImagenes);
                 
