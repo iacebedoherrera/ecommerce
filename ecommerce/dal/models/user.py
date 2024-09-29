@@ -26,9 +26,10 @@ class User(rx.Model, table=True):
     name: str
     surname: str
     email: str = Field(unique=True)
-    password: str
+    password: Optional[str]
     phone_number: str
     disabled: bool = Field(default=False)
     address_id: Optional[int] = Field(default=None, foreign_key="address.id")
     address: Optional[Address] = Relationship(back_populates="users")
+    is_google_user: bool
 

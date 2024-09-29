@@ -27,19 +27,15 @@ class ProductsState(rx.State):
         return self.router.page.params.get("product_type", "")
     
     async def update_products(self):
-        if not self.products:
-            product_type: str = self.get_product_type
-            route: str = "assets/products/" + product_type
-            product_list: List[ProductAttributes] = []
-            for filename in os.listdir(route):
-                try:
-                    product: Product = await PRODUCT_API.get_product_by_partnumber(filename)
-                except:
-                    continue
-                product_path = os.path.join('/products', product_type, filename, filename) + "_01" + const.IMAGES_FORMAT
-                product_attributes: ProductAttributes = ProductAttributes(product_path=product_path, product_name=filename, product=product)
-                product_list.append(product_attributes)
-            self.products = product_list
+        product_type: str = self.get_product_type
+        route: str = "assets/products/" + product_type
+        product_list: List[ProductAttributes] = []
+        for filename in os.listdir(route):
+            product: Product = await PRODUCT_API.get_product_by_partnumber(filename + "01")
+            product_path = os.path.join('/products', product_type, filename, filename) + "_01" + const.IMAGES_FORMAT
+            product_attributes: ProductAttributes = ProductAttributes(product_path=product_path, product_name=filename, product=product)
+            product_list.append(product_attributes)
+        self.products = product_list
 
         
 
@@ -62,11 +58,29 @@ def products() -> rx.Component:
 
 def product_list() -> rx.Component:
     return rx.flex(
-        rx.grid(
-            rx.foreach(ProductsState.products, create_product_view),
-            columns="2",
-            spacing="8",
-            width="80%"
+        rx.desktop_only(
+            rx.flex(
+                rx.grid(
+                    rx.foreach(ProductsState.products, create_product_view),
+                    columns="2",
+                    spacing="8",
+                    width="80%"
+                ),
+                align="center",
+                justify="center"
+            ),
+        ),
+        rx.mobile_and_tablet(
+            rx.flex(
+                rx.grid(
+                    rx.foreach(ProductsState.products, create_product_view),
+                    columns="1",
+                    spacing="5",
+                    width="80%"
+                ),
+                align="center",
+                justify="center"
+            ),
         ),
         direction="column",
         align="center",
@@ -78,8 +92,8 @@ def product_list() -> rx.Component:
 def create_product_view(product: ProductAttributes):
     return rx.flex(
         rx.link(
-            rx.image(src=product.product_path, width="300px", height="auto"),
-            href=Route.PRODUCTS.value + "/" + ProductsState.get_product_type + "/" + product.product.partnumber
+            rx.image(src=product.product_path, width="600px", height="auto"),
+            href=Route.PRODUCTS.value + "/" + ProductsState.get_product_type + "/" + product.product.partnumber[:-2]
         ),
         rx.text(product.product.name),
         rx.text(product.product.price + " €"),

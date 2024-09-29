@@ -1,7 +1,8 @@
 
 class Family:
     _family = {
-        "01": "tshirt"
+        "01": "tshirt",
+        "02": "sweatshirt"
     }
 
 

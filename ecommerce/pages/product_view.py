@@ -27,7 +27,7 @@ class ProductState(rx.State):
     async def update_product(self):
         if not self.product.name:
             partnumber: str = self.router.page.params.get("partnumber", "")
-            self.product = await PRODUCT_API.get_product_by_partnumber(partnumber)
+            self.product = await PRODUCT_API.get_product_by_partnumber(partnumber + "01")
 
     @rx.background
     async def load_carousel(self):

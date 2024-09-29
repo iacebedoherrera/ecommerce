@@ -4,13 +4,21 @@ from ecommerce.dal.models.user import Address
 
 class AddressDAO:
 
-    # Insert a new user
+    # Insert a new address
     def insert(address: Address):
         with rx.session() as session:
             session.add(address)
             session.commit()
             session.refresh(address)
             return address.id
+
+    # Insert a new address and return the eobject   
+    def insert_and_return(address: Address):
+        with rx.session() as session:
+            session.add(address)
+            session.commit()
+            session.refresh(address)
+            return address
 
     # Find a user from the email
     def find_address_by_id(id: int):
@@ -33,3 +41,9 @@ class AddressDAO:
                 session.commit()
                 session.refresh(address)
                 return address
+            
+    
+    def find_address_by_address_and_city(address: str, city: str):
+        with rx.session() as session:
+            return session.exec(Address.select().where((Address.address == address) & 
+                                                       (Address.city == city))).first()

@@ -1,5 +1,4 @@
 import reflex as rx
-import json
 from datetime import datetime
 from pydantic import BaseModel
 from ecommerce.dal.models.user import User
@@ -36,14 +35,22 @@ async def register_user(form_data: dict):
         autonomous_community=form_data["autonomous_community"],
         postal_code=form_data["postal_code"]
     )
-    address_id = AddressDAO.insert(address)
+    if address.address == "":
+        address_id = None
+    else:
+        existing_address: Address = AddressDAO.find_address_by_address_and_city(address.address, address.city)
+        if existing_address is None:
+            address_id = AddressDAO.insert(address)
+        else:
+            address_id = existing_address.id
     user = User(
         name=form_data["name"],
         surname=form_data["surname"],
         email=form_data["email"],
         password=form_data["password"],
         address_id=address_id,
-        phone_number=form_data["phone_number"]
+        phone_number=form_data["phone_number"],
+        is_google_user=form_data["is_google_user"]
     )
     user_api.register_user(user)
 
@@ -77,12 +84,51 @@ async def update_user(id: str, new_data: dict):
 
 
 async def update_address(new_data: dict, address_id: int, user_id: int):
-    for clave, valor in list(new_data.items()):
-        if valor == "":
-            del new_data[clave]
+    if address_id is not None:
+        existing_address: Address = AddressDAO.find_address_by_id(address_id)
+        address_inserted: Address = Address(
+                                    address=new_data["address"],
+                                    city=new_data["city"],
+                                    autonomous_community=new_data["autonomous_community"],
+                                    postal_code=new_data["postal_code"],
+                                )
+        compare_address_for_empty_parameter(existing_address, address_inserted)
+        for clave, valor in list(new_data.items()):
+            if valor == "":
+                del new_data[clave]
+        
+        address: Address = AddressDAO.update_address(address_id, new_data)
+    else:
+        address_to_save: Address = Address(
+                                    address=new_data["address"],
+                                    city=new_data["city"],
+                                    autonomous_community=new_data["autonomous_community"],
+                                    postal_code=new_data["postal_code"],
+                                )
+        address: Address = AddressDAO.find_address_by_address_and_city(address_to_save.address, address_to_save.city)
+        if address is None:
+            address: Address = AddressDAO.insert_and_return(address_to_save)
+    
+    await update_user(user_id, {"address_id": address.id})
+    return address
 
-    address: Address = AddressDAO.update_address(address_id, new_data)
-    return update_user(user_id, {"address_id": address.id})
+
+def compare_address_for_empty_parameter(existing_address: Address, address_inserted: Address):
+    if address_inserted.address == "":
+        if existing_address.address == "":
+            raise Exception("Bad Parameters")
+    
+    if address_inserted.city == "":
+        if existing_address.city == "":
+            raise Exception("Bad Parameters")
+        
+    if address_inserted.autonomous_community == "":
+        if existing_address.autonomous_community == "":
+            raise Exception("Bad Parameters")
+        
+    if address_inserted.postal_code == "":
+        if existing_address.postal_code == "":
+            raise Exception("Bad Parameters")
 
 
 def get_product_images(product_type: str = Path(..., title="Tipo producto"),

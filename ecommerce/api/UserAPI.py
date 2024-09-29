@@ -108,7 +108,8 @@ class UserAPI:
     # Method that records a user in the system
     def register_user(self, user: User):
         # We apply the hash to the password before saving it
-        user.password = self.get_password_hash(user.password)
+        if user.password is not None:
+            user.password = self.get_password_hash(user.password)
         try:
             UserDAO.insert(user)
         except:

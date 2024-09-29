@@ -49,7 +49,7 @@ def show_checkout() -> rx.Component:
         rx.cond(
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
             rx.cond(
-                LoginState.no_mandatory_attribute(),
+                LoginState.get_user_address is None or LoginState.get_user_phone == "",
                 show_review_user_data(),
                 show_payment()
             ),
@@ -122,6 +122,10 @@ def show_review_user_data() -> rx.Component:
         rx.text("Tienes que completar todos los datos de usuario antes de finalizar con el pago."),
         rx.button(
             "Mis datos",
+            width="50%",
             on_click=rx.redirect(Route.MY_ACCOUNT.value)
-        )
+        ),
+        direction="column",
+        align="center",
+        spacing="4"
     )

@@ -3,8 +3,8 @@ import ecommerce.styles.styles as style
 from ecommerce.routes import Route
 from ecommerce.state.userState import LoginState, RegisterState
 from ecommerce import const
-from ecommerce.styles.styles import Size
 import reflex_google_auth
+from ecommerce.styles.styles import Size
 
 
 
@@ -137,23 +137,47 @@ def header() -> rx.Component:
                     ),
                     rx.dialog.root(
                         rx.dialog.content(
-                            rx.center(
-                                rx.dialog.title(
-                                    rx.icon("circle-x", color="red", size=100)
-                                )
-                            ),
-                            rx.text("El usuario o contraseña no son correctos"),
                             rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("user-x", color="red", size=100)
+                                    )
+                                ),
+                                rx.text("El usuario o contraseña no son correctos"),
                                 rx.dialog.close(
                                     rx.flex(
-                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_error),
+                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_error_user_pass),
                                         direction="column"
                                     )
                                 ),
-                                direction="column"
-                            )
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
                         ),
-                        open=LoginState.show_error
+                        open=LoginState.show_error_user_pass
+                    ),
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("users", color="red", size=100)
+                                    )
+                                ),
+                                rx.text("El usuario ya está registrado en el sistema"),
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_error_existing_user),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
+                        ),
+                        open=LoginState.show_error_existing_user
                     ),
                     rx.dialog.root(
                         rx.dialog.content(
@@ -172,6 +196,28 @@ def header() -> rx.Component:
                             ),
                         ),
                         open=RegisterState.show
+                    ),
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("circle-alert", color="red", size=100)
+                                    )
+                                ),
+                                rx.text("Faltan parámetros obligatorios. Inténtelo de nuevo."),
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=RegisterState.change_error_missing_parameter),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
+                        ),
+                        open=RegisterState.show_error_missing_parameter
                     ),
                 ),
                 # Icono de la cesta
@@ -208,7 +254,7 @@ def header() -> rx.Component:
                     rx.menu.content(
                         rx.menu.item("Camisetas", on_click=rx.redirect(f"{Route.PRODUCTS.value}/tshirt")),
                         rx.menu.separator(),
-                        rx.menu.item("Sudaderas", on_click=rx.redirect(Route.PRODUCTS.value)),
+                        rx.menu.item("Sudaderas", on_click=rx.redirect(f"{Route.PRODUCTS.value}/sweatshirt")),
                         rx.menu.separator(),
                         rx.menu.item("Pantalones"),
                         rx.menu.separator(),
@@ -229,6 +275,7 @@ def header() -> rx.Component:
                     ),
                     rx.link(
                         rx.button("Sudaderas", style=style.BUTTON),
+                        href=f"{Route.PRODUCTS.value}/sweatshirt"
                     ),
                     rx.center(
                         rx.divider(orientation="vertical", border_color="black"),
@@ -304,10 +351,12 @@ def register() -> rx.Component:
                 rx.input(
                     placeholder="Nombre",
                     name="name",
+                    required=True
                 ),
                 rx.input(
                     placeholder="Apellidos",
                     name="surname",
+                    required=True
                 ),
                 rx.input(
                     placeholder="Teléfono",
@@ -316,11 +365,13 @@ def register() -> rx.Component:
                 rx.input(
                     placeholder="Email",
                     name="email",
+                    required=True
                 ),
                 rx.input(
                     placeholder="Contraseña",
                     name="password",
-                    type="password"
+                    type="password",
+                    required=True
                 ),
                 rx.input(
                     placeholder="Calle",

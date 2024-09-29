@@ -41,7 +41,7 @@ def user_info() -> rx.Component:
             user_data_form(LoginState.user),
             spacing="5",
             align="center",
-            width="60%"
+            width="80%"
         ),
         rx.flex(
             rx.divider(height="2px", color_scheme="mint"),
@@ -52,7 +52,51 @@ def user_info() -> rx.Component:
             address_data_form(LoginState.address, LoginState.user.id),
             spacing="5",
             align="center",
-            width="60%"
+            width="80%"
+        ),
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.flex(
+                    rx.center(
+                        rx.dialog.title(
+                            rx.icon("user-round-check", color="green", size=100)
+                        )
+                    ),
+                    rx.text("Cambios guardados con éxito"),
+                    rx.dialog.close(
+                        rx.flex(
+                            rx.button("Hecho", color_scheme="blue", on_click=LoginState.change_success_changes),
+                            direction="column"
+                        )
+                    ),
+                    direction="column",
+                    align="center",
+                    spacing="3"
+                ),
+            ),
+            open=LoginState.show_success_changes
+        ),
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.flex(
+                    rx.center(
+                        rx.dialog.title(
+                            rx.icon("map-pinned", color="red", size=100)
+                        )
+                    ),
+                    rx.text("Debe completar la dirección completa"),
+                    rx.dialog.close(
+                        rx.flex(
+                            rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_error_address),
+                            direction="column"
+                        )
+                    ),
+                    direction="column",
+                    align="center",
+                    spacing="3"
+                ),
+            ),
+            open=LoginState.show_error_address
         ),
         direction="column",
         align="center",
@@ -66,56 +110,69 @@ def user_info() -> rx.Component:
 def user_data_form(user: User):
     return rx.form(
         rx.flex(
+            #! Nombre
             rx.flex(
-                #! Nombre
-                rx.flex(
-                    rx.text("Nombre: "),
+                rx.text("Nombre: "),
+                rx.cond(
+                    user.is_google_user,
+                    rx.input(
+                        value=user.name
+                    ),
                     rx.input(
                         placeholder=user.name,
                         name="name",
                     ),
-                    direction="column",
-                    spacing="2"
                 ),
-                #! Apellidos
-                rx.flex(
-                    rx.text("Apellidos: "),
+                direction="column",
+                spacing="2",
+                width="35%"
+            ),
+            #! Apellidos
+            rx.flex(
+                rx.text("Apellidos: "),
+                rx.cond(
+                    user.is_google_user,
+                    rx.input(
+                        value=user.surname
+                    ),
                     rx.input(
                         placeholder=user.surname,
                         name="surname",
                     ),
-                    direction="column",
-                    spacing="2"
                 ),
-                direction="row",
-                spacing="9"
+                direction="column",
+                spacing="2",
+                width="35%"
             ),
+            #! Email
             rx.flex(
-                #! Email
-                rx.flex(
-                    rx.text(f"Email: "),
-                    rx.input(
-                        value=user.email
-                    ),
-                    direction="column",
-                    spacing="2"
+                rx.text(f"Email: "),
+                rx.input(
+                    value=user.email
                 ),
-                #! Contraseña
+                direction="column",
+                spacing="2",
+                width="35%"
+            ),
+            #! Contraseña
+            rx.cond(
+                user.is_google_user is False,
                 rx.flex(
                     rx.text("Contraseña: "),
                     rx.cond(
-                        user.password != "",
+                        user.password is not None and user.password != "",
                         rx.input(
                             placeholder="************",
                             name="password",
                         ),
-                        rx.input()
+                        rx.input(
+                            name="password"
+                        )
                     ),
                     direction="column",
-                    spacing="2"
+                    spacing="2",
+                    width="35%"
                 ),
-                direction="row",
-                spacing="9"
             ),
             rx.flex(
                 #! Teléfono
@@ -125,7 +182,8 @@ def user_data_form(user: User):
                     name="phone_number",
                 ),
                 direction="column",
-                spacing="2"
+                spacing="2",
+                width="35%"
             ),
             rx.flex(
                 rx.button("Guardar datos", type="submit"),
@@ -133,63 +191,84 @@ def user_data_form(user: User):
             ),
             direction="column",
             align="center",
-            spacing="6"
+            spacing="6",
+            width="100%"
         ),
         on_submit=lambda form_data: LoginState.update_user(form_data, user.id),
-        reset_on_submit=True,
+        reset_on_submit=True
     )
 
 
 def address_data_form(address: Address, user_id: int):
     return rx.form(
         rx.flex(
+            #! Direccion
             rx.flex(
-                #! Direccion
-                rx.flex(
-                    rx.text("Dirección: "),
+                rx.text("Dirección: "),
+                rx.cond(
+                    address is not None,
                     rx.input(
                         placeholder=address.address,
                         name="address",
                     ),
-                    direction="column",
-                    spacing="2"
+                    rx.input(
+                        name="address",
+                    )
                 ),
-                #! Ciudad
-                rx.flex(
-                    rx.text("Ciudad: "),
+                direction="column",
+                spacing="2",
+                width="35%"
+            ),
+            #! Ciudad
+            rx.flex(
+                rx.text("Ciudad: "),
+                rx.cond(
+                    address is not None,
                     rx.input(
                         placeholder=address.city,
                         name="city",
                     ),
-                    direction="column",
-                    spacing="2"
+                    rx.input(
+                        name="city",
+                    )
                 ),
-                direction="row",
-                spacing="9"
+                direction="column",
+                spacing="2",
+                width="35%"
             ),
+            #! Comunidad
             rx.flex(
-                #! Comunidad
-                rx.flex(
-                    rx.text(f"Comunidad: "),
+                rx.text(f"Comunidad: "),
+                rx.cond(
+                    address is not None,
                     rx.input(
                         placeholder=address.autonomous_community,
-                        name="autonomous_community"
+                        name="autonomous_community",
                     ),
-                    direction="column",
-                    spacing="2"
+                    rx.input(
+                        name="autonomous_community",
+                    )
                 ),
-                #! Codigo postal
-                rx.flex(
-                    rx.text("Código postal: "),
+                direction="column",
+                spacing="2",
+                width="35%"
+            ),
+            #! Codigo postal
+            rx.flex(
+                rx.text("Código postal: "),
+                rx.cond(
+                    address is not None,
                     rx.input(
                         placeholder=address.postal_code,
                         name="postal_code",
                     ),
-                    direction="column",
-                    spacing="2"
+                    rx.input(
+                        name="postal_code",
+                    )
                 ),
-                direction="row",
-                spacing="9"
+                direction="column",
+                spacing="2",
+                width="35%"
             ),
             rx.flex(
                 rx.button("Guardar dirección", type="submit"),
@@ -197,8 +276,9 @@ def address_data_form(address: Address, user_id: int):
             ),
             direction="column",
             align="center",
-            spacing="6"
+            spacing="6",
+            width="100%"
         ),
         on_submit=lambda form_data: LoginState.update_address(form_data, address.id, user_id),
-        reset_on_submit=True,
+        reset_on_submit=True
     )

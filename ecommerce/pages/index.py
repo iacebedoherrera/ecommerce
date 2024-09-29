@@ -23,27 +23,46 @@ def index() -> rx.Component:
 
 
 def products_index() -> rx.Component:
+    images = []
+    images.extend(["products/tshirt/010203/010203_01.jpg", "products/tshirt/010203/010203_02.jpg", 
+                   "products/sweatshirt/020102/020102_01.jpg", "products/sweatshirt/020102/020102_02.jpg"])
     return rx.flex(
-        rx.vstack(
-            rx.link(
-                rx.image(
-                    src="/icons/men.avif",
-                    height=Size.ULTRA_BIG.value
+        rx.desktop_only(
+            rx.flex(
+                rx.grid(
+                    rx.foreach(images, create_grid),
+                    columns="2",
+                    spacing="8",
+                    align="center",
+                    justify="center",
+                    width="80%"
+                ),
+                align="center",
+                justify="center"
+            )
+        ),
+        rx.mobile_and_tablet(
+            rx.center(
+                rx.grid(
+                    rx.foreach(images, create_grid),
+                    columns="1",
+                    spacing="0",
+                    align="center",
+                    justify="center",
+                    width="80%"
                 )
             )
         ),
-        rx.vstack(
-            rx.link(
-                rx.image(
-                    src="/icons/women.avif",
-                    height=Size.ULTRA_BIG.value
-                )
-            )
-        ),
-        direction="row",
+        direction="column",
+        align="center",
         justify="center",
         spacing="5",
         padding_bottom=Size.BIG.value
     )
 
 
+def create_grid(image: str):
+    return rx.flex(
+        rx.image(src=image, width="500px", height="auto"),
+        align="center"
+    )
