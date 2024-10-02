@@ -9,6 +9,8 @@ from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
 from ecommerce.styles.styles import Size
+from rx_carousel.carousel import carousel
+from typing import List
 
 
 dotenv.load_dotenv()
@@ -19,36 +21,99 @@ PRODUCT_API = ProductAPI()
 
 class ProductState(rx.State):
     product: Product = Product()
+    images: List[str] = []
+    page_loading: bool = True
 
     @rx.var(cache=True)
     def get_product_type(self) -> str:
         return self.router.page.params.get("product_type", "")
     
+    def change_page_loading(self, value: bool):
+        self.page_loading = value
+    
     async def update_product(self):
-        if not self.product.name:
-            partnumber: str = self.router.page.params.get("partnumber", "")
-            self.product = await PRODUCT_API.get_product_by_partnumber(partnumber + "01")
+        partnumber: str = self.router.page.params.get("partnumber", "")
+        self.product = await PRODUCT_API.get_product_by_partnumber(partnumber + "01")
 
-    @rx.background
-    async def load_carousel(self):
-        return rx.call_script("carousel();")
+    async def get_product_images(self):
+        product_type = self.router.page.params.get("product_type", "")
+        partnumber = self.router.page.params.get("partnumber", "")
+        path = os.path.join("assets/products", product_type, partnumber)
+        base_image_path = os.path.join("/products", product_type, partnumber)
+        images_path = []
+        for image in os.listdir(path):
+            images_path.append(os.path.join(base_image_path, image))
+
+        self.images = images_path
+
+    def update_page_name(self):
+        self.change_page_loading(False)
+        return rx.call_script(f"document.title = '{self.product.name}';")
 
 
 @rx.page(
     route=f"{Route.PRODUCTS.value}/[product_type]/[partnumber]",
     title=const.PRODUCTS.get(ProductState.get_product_type),
-    on_load=[ProductState.update_product, ProductState.load_carousel]
+    on_load=[ProductState.update_product, ProductState.get_product_images, ProductState.update_page_name]
 )
 def product_view() -> rx.Component:
     return rx.flex(
         utils.lang(),
         header(),
         rx.desktop_only(
-            product_detail()
+            rx.skeleton(
+                product_detail(),
+                loading=ProductState.page_loading
+            )
         ),
         rx.mobile_and_tablet(
-            product_detail_for_mobile(),
-            width="100%"
+            rx.center(
+                product_detail_for_mobile(),
+            )
+        ),
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.flex(
+                    rx.center(
+                        rx.dialog.title(
+                            rx.icon("shirt", color="red", size=100)
+                        )
+                    ),
+                    rx.text("No hay stock de este artículo. Pruebe en otro momento."),
+                    rx.dialog.close(
+                        rx.flex(
+                            rx.button("Cerrar", color_scheme="red", on_click=ShoppingState.change_no_stock_message),
+                            direction="column"
+                        )
+                    ),
+                    direction="column",
+                    align="center",
+                    spacing="3"
+                ),
+            ),
+            open=ShoppingState.show_no_stock_message
+        ),
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.flex(
+                    rx.center(
+                        rx.dialog.title(
+                            rx.icon("shirt", color="green", size=100)
+                        )
+                    ),
+                    rx.text("Añadido al carrito."),
+                    rx.dialog.close(
+                        rx.flex(
+                            rx.button("OK", color_scheme="blue", on_click=ShoppingState.change_show_success_added),
+                            direction="column"
+                        )
+                    ),
+                    direction="column",
+                    align="center",
+                    spacing="3"
+                ),
+            ),
+            open=ShoppingState.show_success_added
         ),
         footer(),
         direction="column",
@@ -59,26 +124,42 @@ def product_view() -> rx.Component:
 
 def product_detail() -> rx.Component:
     return rx.flex(
-        photos_carousel(),
+        carousel(
+            rx.foreach(ProductState.images, create_image_carousel),
+            width="40%",
+            height="auto"
+        ),
         product_info(),
         direction="row",
         align="center",
         justify="center",
         padding_top=Size.BIG.value,
         padding_bottom=Size.BIG.value,
+        margin_left="1em",
         gap="10em",
         width="100%"
     )
 
 def product_detail_for_mobile() -> rx.Component:
     return rx.flex(
-        photos_carousel(),
-        product_info(),
+        carousel(
+            rx.foreach(ProductState.images, create_image_carousel),
+            width="80%",
+            height="auto"
+        ),
+        product_info_for_mobile(),
         direction="column",
         align="center",
         padding_top=Size.BIG.value,
         padding_bottom=Size.BIG.value,
+        margin_left="1em",
+        margin_right="1em",
         width="90%"
+    )
+
+def create_image_carousel(image_path: str):
+    return rx.image(
+        src=image_path
     )
 
 def product_info() -> rx.Component:
@@ -100,15 +181,49 @@ def product_info() -> rx.Component:
             align="center",
             spacing="6"
         ),
+        rx.flex(
+            rx.button(
+                rx.icon(tag="shopping-cart"),
+                "Añadir a la cesta",
+                color_scheme="green",
+                on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
+            ),
+            padding_top="2em"
+        ),
+        direction="column",
+        spacing="5"
+    )
+
+def product_info_for_mobile() -> rx.Component:
+    return rx.flex(
+        rx.flex(
+            rx.text(ProductState.product.name, size="7", weight="bold"),
+            rx.text(ProductState.product.price + " €", size="5"),
+            direction="column",
+            align="2"
+        ),
+        rx.flex(  
+            rx.text("Talla: "),    
+            rx.select(
+                ShoppingState.sizes,
+                default_value=ShoppingState.size,
+                on_change=ShoppingState.set_size
+            ),
+            direction="row",
+            align="center",
+            spacing="6"
+        ),
         rx.dialog.root(
             rx.dialog.trigger(
-                rx.button(
-                    rx.icon(tag="shopping-cart"),
-                    "Añadir a la cesta",
-                    color_scheme="green",
-                    on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
-                ),
-                padding_top="3em"
+                rx.center(
+                    rx.button(
+                        rx.icon(tag="shopping-cart"),
+                        "Añadir a la cesta",
+                        color_scheme="green",
+                        on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
+                    ),
+                    padding_top="1em"
+                )
             ),
             rx.dialog.content(
                 rx.dialog.close(
@@ -125,78 +240,6 @@ def product_info() -> rx.Component:
             )
         ),
         direction="column",
-        spacing="5"
-    )
-
-
-def photos_carousel() -> rx.Component:
-    return rx.flex(
-        rx.html(
-            """
-            <div class="carousel-container">
-                <div id="slideshow-container" class="slideshow-container"></div>
-                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                <a class="next" onclick="plusSlides(1)">&#10095;</a>
-            </div>
-            """
-        ),
-        rx.script(
-            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-        ),
-        rx.script(
-            """
-            function carousel() {
-                var pathname = window.location.pathname;
-                
-                var backendUrl = "https://ecommerce-f8v1.onrender.com";
-                var rutaImagenes = backendUrl + pathname.replace('/products', '/images');
-                console.log(rutaImagenes);
-                
-                $.get(rutaImagenes, function(data) {
-                    if (data.image_paths) {
-                        var imagePaths = data.image_paths;
-                        var slideshowContainer = document.getElementById("slideshow-container");
-                        slideshowContainer.innerHTML = ""; // Limpiar el contenedor antes de agregar imágenes nuevas
-                        
-                        imagePaths.forEach(function(path) {
-
-                            var adjustedPath = '/products/' + path;
-                            
-                            var slide = document.createElement("div");
-                            slide.className = "mySlides fade";
-                            
-                            var img = document.createElement("img");
-                            img.src = adjustedPath;
-                            img.style.width = "100%";
-                            
-                            slide.appendChild(img);
-                            slideshowContainer.appendChild(slide);
-                        });
-                        
-                        var slideIndex = 1;
-                        showSlides(slideIndex);
-                        
-                        window.plusSlides = function(n) {
-                            showSlides(slideIndex += n);
-                        };
-                        
-                        function showSlides(n) {
-                            var i;
-                            var slides = document.getElementsByClassName("mySlides");
-                            if (n > slides.length) {slideIndex = 1}    
-                            if (n < 1) {slideIndex = slides.length}
-                            for (i = 0; i < slides.length; i++) {
-                                slides[i].style.display = "none";  
-                            }
-                            slides[slideIndex-1].style.display = "block";  
-                        }
-                    } else {
-                        console.log("No image paths found in response");
-                    }
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    console.log("Error fetching images: ", textStatus, errorThrown);
-                });
-            }
-            """
-        )
+        spacing="5",
+        width="80%"
     )

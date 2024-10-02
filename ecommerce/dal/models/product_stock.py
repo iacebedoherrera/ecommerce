@@ -3,12 +3,7 @@ from sqlmodel import Field
 
 
 
-class Product(rx.Model, table=True):
+class Stock(rx.Model, table=True):
     id: int = Field(default=None, primary_key=True)
-    name: str
     partnumber: str = Field(unique=True)
-    family: str
-    model: str
-    color: str
-    size: str
-    price: str
+    quantity: int

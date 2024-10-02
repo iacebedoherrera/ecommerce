@@ -27,6 +27,28 @@ def shopping_cart() -> rx.Component:
             show_checkout(),
             show_go_shopping()
         ),
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.flex(
+                    rx.center(
+                        rx.dialog.title(
+                            rx.icon("shirt", color="red", size=100)
+                        )
+                    ),
+                    rx.text("No hay stock de este artículo. Pruebe en otro momento."),
+                    rx.dialog.close(
+                        rx.flex(
+                            rx.button("Cerrar", color_scheme="red", on_click=ShoppingState.change_no_stock_message),
+                            direction="column"
+                        )
+                    ),
+                    direction="column",
+                    align="center",
+                    spacing="3"
+                ),
+            ),
+            open=ShoppingState.show_no_stock_message
+        ),
         footer(),
         direction="column",
         position="relative",

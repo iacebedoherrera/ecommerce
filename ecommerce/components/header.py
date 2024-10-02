@@ -2,6 +2,7 @@ import reflex as rx
 import ecommerce.styles.styles as style
 from ecommerce.routes import Route
 from ecommerce.state.userState import LoginState, RegisterState
+from ecommerce.state.productsState import ProductsState
 from ecommerce import const
 import reflex_google_auth
 from ecommerce.styles.styles import Size
@@ -266,7 +267,7 @@ def header() -> rx.Component:
             rx.desktop_only(
                 rx.flex(
                     rx.link(
-                        rx.button("Camisetas", style=style.BUTTON),
+                        rx.button("Camisetas", style=style.BUTTON, on_click=ProductsState.change_page_loading(True)),
                         href=f"{Route.PRODUCTS.value}/tshirt"
                     ),
                     rx.center(
@@ -274,7 +275,7 @@ def header() -> rx.Component:
                         height="2em",
                     ),
                     rx.link(
-                        rx.button("Sudaderas", style=style.BUTTON),
+                        rx.button("Sudaderas", style=style.BUTTON, on_click=ProductsState.change_page_loading(True)),
                         href=f"{Route.PRODUCTS.value}/sweatshirt"
                     ),
                     rx.center(

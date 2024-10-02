@@ -5,6 +5,7 @@ from ecommerce.dal.models.user import User
 from ecommerce.dal.models.user import Address
 from ecommerce.dal.models.order import Order
 from .UserAPI import UserAPI
+from .ProductAPI import ProductAPI
 from ecommerce.dal.dao.UserDAO import UserDAO
 from ecommerce.dal.dao.AddressDAO import AddressDAO
 from fastapi import Path
@@ -19,6 +20,7 @@ from ecommerce.dal.models.order_item import OrderItem
 
 user_api = UserAPI()
 paypal_api = PayPalAPI()
+product_api = ProductAPI()
 
 
 async def get_user(token: str) -> User:
@@ -171,8 +173,11 @@ async def save_order_items(items: dict, order_id: int):
         quantity = items.get(sku)
         order_item: OrderItem = OrderItem(
             order_id=order_id,
-            sku=sku,
+            partnumber=sku,
             quantity=quantity,
             creation_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
         OrderItemDAO.insert(order_item)
+        # Restamos del stock
+        await product_api.update_quantity_by_partnumber(sku, -quantity)
+

@@ -28,17 +28,30 @@ class ShoppingState(rx.State):
     total_amount = 0.0
     paypal_products: str = rx.LocalStorage(name="products")
     paypal_amount: str = rx.LocalStorage(name="amount")
+    show_no_stock_message: bool = False
+    show_success_added: bool = False
 
     async def add_product_to_shopping_cart(self, partnumber: str):
         new_size = Size.get_id(self.size)
         partnumber = partnumber[:-2] + new_size
         product: Product = await PRODUCT_API.get_product_by_partnumber(partnumber)
-        if self.products.get(product.id):
-            self.products.get(product.id).quantity += 1
+        quantity: int = await PRODUCT_API.get_quantity_by_partnumber(product.partnumber)
+        if quantity > 0:
+            if self.products.get(product.id):
+                self.products.get(product.id).quantity += 1
+            else:
+                shopping_cart_product: ShoppingCartProduct = ShoppingCartProduct(product=product, quantity=1)
+                self.products[product.id] = shopping_cart_product
+            self.total_amount += product.price
+            self.change_show_success_added()
         else:
-            shopping_cart_product: ShoppingCartProduct = ShoppingCartProduct(product=product, quantity=1)
-            self.products[product.id] = shopping_cart_product
-        self.total_amount += product.price
+            self.change_no_stock_message()
+
+    def change_no_stock_message(self):
+        self.show_no_stock_message = not (self.show_no_stock_message)
+
+    def change_show_success_added(self):
+        self.show_success_added = not (self.show_success_added)
         
     def create_path_for_image(self, shoppingCartProduct: ShoppingCartProduct) -> str:
         product: Product = shoppingCartProduct.product
@@ -74,11 +87,15 @@ class ShoppingState(rx.State):
         self.paypal_products = json.dumps(products)
         self.paypal_amount = self.total_amount
 
-    def update_product_qty(self, product_name: str, product_size: str, updated_qty: int):
+    async def update_product_qty(self, product_name: str, product_size: str, updated_qty: int):
         for id in self.products.keys():
             product = self.products.get(id)
             if product.product.name == product_name and product.product.size == Size.get_id(product_size):
                 if updated_qty > 0:
+                    quantity: int = await PRODUCT_API.get_quantity_by_partnumber(product.product.partnumber)
+                    if quantity < product.quantity + updated_qty:
+                        self.change_no_stock_message()
+                        return
                     self.total_amount += product.product.price
                     product.quantity += updated_qty
                 else:
