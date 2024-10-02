@@ -12,6 +12,7 @@ from ecommerce.pages.product_view import ProductState
 
 @rx.page(
     route=f"{Route.PRODUCTS.value}/[product_type]",
+    title="Productos",
     on_load=[ProductsState.update_products, ProductsState.update_page_name]
 )
 def products() -> rx.Component:

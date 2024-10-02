@@ -9,5 +9,6 @@ pymysql.install_as_MySQLdb()
 
 config = rx.Config(
     app_name="ecommerce",
-    db_url=os.environ.get("DATABASE_URL")
+    db_url=os.environ.get("DATABASE_URL"),
+    api_url="https://ecommerce-f8v1.onrender.com"
 )

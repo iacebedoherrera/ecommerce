@@ -53,7 +53,7 @@ class ProductState(rx.State):
 
 @rx.page(
     route=f"{Route.PRODUCTS.value}/[product_type]/[partnumber]",
-    title=const.PRODUCTS.get(ProductState.get_product_type),
+    title="Productos",
     on_load=[ProductState.update_product, ProductState.get_product_images, ProductState.update_page_name]
 )
 def product_view() -> rx.Component:
