@@ -61,6 +61,7 @@ python-socketio==5.11.2
 readme_renderer==43.0
 redis==4.6.0
 reflex==0.5.10
+reflex-carousel==0.0.1
 reflex-chakra==0.5.10
 reflex-google-auth==0.0.5
 reflex-hosting-cli==0.1.13
