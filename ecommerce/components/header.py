@@ -98,7 +98,8 @@ def header() -> rx.Component:
                                 rx.dialog.close(
                                     rx.flex(
                                         rx.button("Cancelar", color_scheme="red", on_click=LoginState.change),
-                                        direction="column"
+                                        direction="column",
+                                        margin_top="0.5em"
                                     )
                                 ),
                                 direction="column"
@@ -184,7 +185,8 @@ def header() -> rx.Component:
                                 rx.dialog.close(
                                     rx.flex(
                                         rx.button("Cancelar", color_scheme="red", on_click=RegisterState.change),
-                                        direction="column"
+                                        direction="column",
+                                        margin_top="0.5em"
                                     )
                                 ),
                                 direction="column"
