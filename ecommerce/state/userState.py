@@ -58,9 +58,11 @@ class LoginState(GoogleAuthState):
                 token: dict = await api.login_user(form_data)
                 self.login_cookie = token.get("access_token")
                 self.username = token.get("username")
+                self.user = await api.get_user(token.get("access_token"))
             else:
                 self.login_cookie = self.tokeninfo["sub"]
                 self.username = self.tokeninfo["given_name"]
+                self.user = await api.get_user(self.tokeninfo["sub"])
         except Exception:
             self.show_error_user_pass = not (self.show_error_user_pass)
 
@@ -82,14 +84,16 @@ class LoginState(GoogleAuthState):
                 "phone_number": "",
                 "is_google_user": True
             }
-            await api.register_user(form_data)
+            user: User = await api.register_user(form_data)
             self.login_cookie = self.tokeninfo["sub"]
             self.username = name
+            self.user = user
             self.change()
         else:
             if user.is_google_user:
                 self.login_cookie = self.tokeninfo["sub"]
                 self.username = user.name
+                self.user = user
                 self.change()
             else:
                 self.change_error_existing_user()

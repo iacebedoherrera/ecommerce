@@ -9,6 +9,8 @@ class UserDAO:
         with rx.session() as session:
             session.add(user)
             session.commit()
+            session.refresh(user)
+            return user
 
     # Find a user from the email
     def find_user_by_email(email: str):

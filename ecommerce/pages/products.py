@@ -35,7 +35,7 @@ def product_list() -> rx.Component:
                     rx.foreach(ProductsState.products, create_product_view),
                     columns="2",
                     spacing="8",
-                    width="80%"
+                    width="95%"
                 ),
                 align="center",
                 justify="center"
@@ -46,7 +46,7 @@ def product_list() -> rx.Component:
                 rx.grid(
                     rx.foreach(ProductsState.products, create_product_view),
                     columns="1",
-                    spacing="5",
+                    spacing="6",
                     width="80%"
                 ),
                 align="center",
@@ -64,12 +64,17 @@ def create_product_view(product: ProductAttributes):
     return rx.skeleton(
         rx.flex(
             rx.link(
-                rx.image(src=product.product_path, width="600px", height="auto"),
+                rx.image(src=product.product_path),
                 href=Route.PRODUCTS.value + "/" + ProductsState.get_product_type + "/" + product.product.partnumber[:-2],
                 on_click=ProductState.change_page_loading(True)
             ),
-            rx.text(product.product.name),
-            rx.text(product.product.price + " €"),
+            rx.flex(
+                rx.text(product.product.name),
+                rx.text(product.product.price + " €"),
+                direction="column",
+                align="center"
+            ),
+            spacing="2",
             direction="column",
             align="center"
         ),

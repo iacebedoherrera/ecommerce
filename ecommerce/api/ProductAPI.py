@@ -1,5 +1,6 @@
 from ecommerce.dal.dao.ProductDAO import ProductDAO
 from ecommerce.dal.models.product import Product
+from typing import List
 
 
 
@@ -13,6 +14,13 @@ class ProductAPI:
         else:
             return product
         
+    async def get_products_by_partnumbers(self, partnumbers: List[str]):
+        products: List[Product] = ProductDAO.find_by_partnumbers(partnumbers)
+        if not products:
+            raise Exception("No existe el artículo en BBDD.")
+        else:
+            return products
+
 
     async def get_product_by_id(self, id: int):
         product: Product = ProductDAO.find_by_id(id)

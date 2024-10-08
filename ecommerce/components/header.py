@@ -11,9 +11,9 @@ from ecommerce.styles.styles import Size
 
 def header() -> rx.Component:
     return rx.flex(
-        # ! HEADER
+        # HEADER
         rx.flex(
-            # TODO Icono de la tienda
+            # Icono de la tienda
             rx.flex(
                 rx.link(
                     rx.image(
@@ -22,7 +22,7 @@ def header() -> rx.Component:
                     href=Route.INDEX.value
                 ),
                 position="absolute",
-                left="3em"
+                left="5%"
             ),
             rx.flex(
                 rx.desktop_only(
@@ -38,35 +38,29 @@ def header() -> rx.Component:
                     )
                 )
             ),
-            # Iconos de idioma, perfil y cesta
+            # Iconos de perfil y cesta
             rx.flex(
-                # Icono del idioma
-                rx.vstack(
-                    rx.menu.root(
-                        rx.menu.trigger(
-                            rx.image(
-                                src="/icons/spainIcon.png",
-                                width=style.Size.LARGE.value,
-                                height=style.Size.LARGE.value,
-                            )
-                        )
-                    ),
-                ),
                 # Nombre de usuario en caso de estar logueado
                 rx.cond(
                     LoginState.username != "",
-                    rx.vstack(
-                        rx.text(LoginState.username)
+                    rx.flex(
+                        rx.text(
+                            LoginState.username, 
+                            margin_left="10px", 
+                            overflow="hidden", 
+                            text_overflow="ellipsis", 
+                            white_space="normal",
+                            word_break="break-word",
+                            overflow_wrap="break-word"
+                        )
                     ),
                 ),
                 # Icono de inicio de sesion
                 rx.vstack(
                     rx.menu.root(
                         rx.menu.trigger(
-                            rx.image(
-                                src="/icons/userIcon.png",
-                                width=style.Size.LARGE.value,
-                                height=style.Size.LARGE.value,
+                            rx.icon(
+                                "user-round"
                             )
                         ),
                         rx.cond(
@@ -223,20 +217,15 @@ def header() -> rx.Component:
                 ),
                 # Icono de la cesta
                 rx.vstack(
-                    rx.link(
-                        rx.image(
-                            src="/icons/shoppingIcon.png",
-                            width=style.Size.LARGE.value,
-                            height=style.Size.LARGE.value,
-                        ),
-                        variant="ghost",
-                        href=Route.SHOPPING_CART.value
+                    rx.icon(
+                        "shopping-cart",
+                        on_click=rx.redirect(Route.SHOPPING_CART.value)
                     ),
                 ),
                 direction="row",
                 position="absolute",
-                spacing="7",
-                right="3em"
+                spacing="5vw",
+                right="5%"
             ),
             direction="row",
             width="100%",

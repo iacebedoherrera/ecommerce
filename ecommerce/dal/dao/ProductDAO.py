@@ -1,6 +1,7 @@
 import reflex as rx
 from ecommerce.dal.models.product import Product
 from ecommerce.dal.models.product_stock import Stock
+from typing import List
 
 
 
@@ -10,6 +11,10 @@ class ProductDAO:
     def find_by_partnumber(partnumber: str):
         with rx.session() as session:
             return session.exec(Product.select().where(Product.partnumber == partnumber)).first()
+        
+    def find_by_partnumbers(partnumbers: List[str]):
+        with rx.session() as session:
+            return session.exec(Product.select().where(Product.partnumber.in_(partnumbers))).all()
         
 
     # Find a product from the id

@@ -14,7 +14,6 @@ from typing import List
 
 
 dotenv.load_dotenv()
-BACKEND_URL = os.environ.get("BACKEND_URL")
 
 PRODUCT_API = ProductAPI()
 

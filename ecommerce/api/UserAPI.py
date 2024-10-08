@@ -111,7 +111,7 @@ class UserAPI:
         if user.password is not None:
             user.password = self.get_password_hash(user.password)
         try:
-            UserDAO.insert(user)
+            return UserDAO.insert(user)
         except:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,

@@ -26,16 +26,19 @@ class ProductsState(rx.State):
 
     def change_page_loading(self, value: bool):
         self.page_loading = value
-    
+
     async def update_products(self):
         product_type: str = self.get_product_type
         route: str = "assets/products/" + product_type
         product_list: List[ProductAttributes] = []
+        product_partnumbers: List[str] = []
         for filename in os.listdir(route):
+            product_partnumbers.append(filename + "01")
+        product_list_from_db: List[Product] = await PRODUCT_API.get_products_by_partnumbers(product_partnumbers)
+        for product in product_list_from_db:
             try:
-                product: Product = await PRODUCT_API.get_product_by_partnumber(filename + "01")
-                product_path = os.path.join('/products', product_type, filename, filename) + "_01" + const.IMAGES_FORMAT
-                product_attributes: ProductAttributes = ProductAttributes(product_path=product_path, product_name=filename, product=product)
+                product_path = os.path.join('/products', product_type, product.partnumber[:-2], product.partnumber[:-2]) + "_01" + const.IMAGES_FORMAT
+                product_attributes: ProductAttributes = ProductAttributes(product_path=product_path, product_name=product.partnumber[:-2], product=product)
                 product_list.append(product_attributes)
             except:
                 continue

@@ -10,7 +10,6 @@ from ecommerce.styles.styles import Size
 
 
 dotenv.load_dotenv()
-BACKEND_URL = os.environ.get("BACKEND_URL")
 
 
 @rx.page(
@@ -57,8 +56,8 @@ def shopping_cart() -> rx.Component:
 
 def show_go_shopping() -> rx.Component:
     return rx.flex(
-        rx.image(src="/icons/empty_trolley.png"),
-        rx.text("Tu carrito aún está vacío. Corre a comprar!"),
+        rx.icon("shopping-bag", size=150),
+        rx.text("Tu carrito aún está vacío. ¡Corre a comprar!"),
         direction="column",
         align="center",
         spacing="7",
@@ -71,7 +70,8 @@ def show_checkout() -> rx.Component:
         rx.cond(
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
             rx.cond(
-                LoginState.get_user_address is None or LoginState.get_user_phone == "",
+                #LoginState.get_user_address() is None or LoginState.get_user_phone() == "",
+                LoginState.user.address_id is None or LoginState.user.phone_number == "",
                 show_review_user_data(),
                 show_payment()
             ),
