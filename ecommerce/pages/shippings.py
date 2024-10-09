@@ -15,7 +15,9 @@ def shippings() -> rx.Component:
     return rx.flex(
         utils.lang(),
         header(),
-        shippings_info(),
+        rx.center(
+            shippings_info(),
+        ),
         footer(),
         direction="column",
         position="relative",
@@ -121,5 +123,6 @@ def shippings_info() -> rx.Component:
         align="center",
         spacing="9",
         text_align="center",
-        margin_bottom=Size.BIG.value
+        margin_bottom=Size.BIG.value,
+        width="80%"
     )

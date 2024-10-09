@@ -15,7 +15,9 @@ def contact() -> rx.Component:
     return rx.flex(
         utils.lang(),
         header(),
-        contact_info(),
+        rx.center(
+            contact_info(),
+        ),
         footer(),
         direction="column",
         position="relative",
@@ -45,5 +47,6 @@ def contact_info() -> rx.Component:
         align="center",
         spacing="9",
         text_align="center",
-        margin_bottom=Size.BIG.value
+        margin_bottom=Size.BIG.value,
+        width="80%"
     )

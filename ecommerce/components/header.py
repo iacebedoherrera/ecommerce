@@ -45,13 +45,7 @@ def header() -> rx.Component:
                     LoginState.username != "",
                     rx.flex(
                         rx.text(
-                            LoginState.username, 
-                            margin_left="10px", 
-                            overflow="hidden", 
-                            text_overflow="ellipsis", 
-                            white_space="normal",
-                            word_break="break-word",
-                            overflow_wrap="break-word"
+                            LoginState.username
                         )
                     ),
                 ),
@@ -226,8 +220,8 @@ def header() -> rx.Component:
                 ),
                 direction="row",
                 position="absolute",
-                spacing="5vw",
-                right="5%"
+                spacing="clamp(5px, 10vw, 80px)",
+                right="5%",
             ),
             direction="row",
             width="100%",

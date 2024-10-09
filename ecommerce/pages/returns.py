@@ -15,7 +15,9 @@ def returns() -> rx.Component:
     return rx.flex(
         utils.lang(),
         header(),
-        returns_info(),
+        rx.center(
+            returns_info(),
+        ),
         footer(),
         direction="column",
         position="relative",
@@ -155,5 +157,6 @@ def returns_info() -> rx.Component:
         align="center",
         spacing="9",
         text_align="center",
-        margin_bottom=Size.BIG.value
+        margin_bottom=Size.BIG.value,
+        width="80%"
     )
