@@ -113,7 +113,7 @@ def header() -> rx.Component:
                                             ],
                                         ),
                                     ),
-                                    box_shadow="rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",  # noqa
+                                    box_shadow="rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
                                     opacity="0.7",
                                     overflow="hidden",
                                     border_radius="10px",
@@ -125,6 +125,53 @@ def header() -> rx.Component:
                         ),
                         open=LoginState.show
                     ),
+                    # Inicio de sesion OK
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("user-round-check", color="green", size=100)
+                                    )
+                                ),
+                                rx.text(f"Bienvenido, {LoginState.username}"),
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("OK", color_scheme="blue", on_click=LoginState.change_show_log_in),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
+                        ),
+                        open=LoginState.show_log_in
+                    ),
+                    # Cierre de sesion OK
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("log-out", color="green", size=100)
+                                    )
+                                ),
+                                rx.text(f"Hasta pronto, {LoginState.user.name}"),
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("OK", color_scheme="blue", on_click=LoginState.change_show_log_out),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
+                        ),
+                        open=LoginState.show_log_out
+                    ),
+                    # Inicio de sesion KO
                     rx.dialog.root(
                         rx.dialog.content(
                             rx.flex(
@@ -324,7 +371,7 @@ def log_in() -> rx.Component:
             direction="column",
             spacing="6"
         ),
-        on_submit=LoginState.log_in,
+        on_submit=lambda form_data: LoginState.log_in(form_data, True),
         reset_on_submit=True,
     )
 

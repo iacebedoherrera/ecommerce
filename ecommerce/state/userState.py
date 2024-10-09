@@ -21,6 +21,8 @@ class LoginState(GoogleAuthState):
     show_error_existing_user: bool = False
     show_error_address: bool = False
     show_success_changes: bool = False
+    show_log_in: bool = False
+    show_log_out: bool = False
     user: User = User(name="", surname="", email="", password="", 
                       phone_number="", address_id=None, disabled=False,
                       is_google_user=False)
@@ -52,17 +54,27 @@ class LoginState(GoogleAuthState):
     def change_success_changes(self):
         self.show_success_changes = not (self.show_success_changes)
 
-    async def log_in(self, form_data: dict):
+    def change_show_log_in(self):
+        self.show_log_in = not (self.show_log_in)
+
+    def change_show_log_out(self):
+        self.show_log_out = not (self.show_log_out)
+
+    async def log_in(self, form_data: dict, show_message: bool):
         try:
             if form_data["password"] is not None:
                 token: dict = await api.login_user(form_data)
                 self.login_cookie = token.get("access_token")
                 self.username = token.get("username")
                 self.user = await api.get_user(token.get("access_token"))
+                if show_message:
+                    self.change_show_log_in()
             else:
                 self.login_cookie = self.tokeninfo["sub"]
                 self.username = self.tokeninfo["given_name"]
                 self.user = await api.get_user(self.tokeninfo["sub"])
+                if show_message:
+                    self.change_show_log_in()
         except Exception:
             self.show_error_user_pass = not (self.show_error_user_pass)
 
@@ -89,18 +101,21 @@ class LoginState(GoogleAuthState):
             self.username = name
             self.user = user
             self.change()
+            self.change_show_log_in()
         else:
             if user.is_google_user:
                 self.login_cookie = self.tokeninfo["sub"]
                 self.username = user.name
                 self.user = user
                 self.change()
+                self.change_show_log_in()
             else:
                 self.change_error_existing_user()
         
     def log_out(self):
         self.login_cookie = ""
         self.username = ""
+        self.change_show_log_out()
     
     async def refresh_user(self):
         try:
@@ -123,7 +138,7 @@ class LoginState(GoogleAuthState):
         user: User = await api.update_user(id, form_data)
         if user is not None:
             self.log_out
-            await self.log_in({"username":user.email, "password":user.password})
+            await self.log_in({"username":user.email, "password":user.password}, False)
             self.user = user
             self.change_success_changes()
         
