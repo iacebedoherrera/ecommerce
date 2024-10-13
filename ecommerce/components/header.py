@@ -288,10 +288,6 @@ def header() -> rx.Component:
                         rx.menu.item("Camisetas", on_click=rx.redirect(f"{Route.PRODUCTS.value}/tshirt")),
                         rx.menu.separator(),
                         rx.menu.item("Sudaderas", on_click=rx.redirect(f"{Route.PRODUCTS.value}/sweatshirt")),
-                        rx.menu.separator(),
-                        rx.menu.item("Pantalones"),
-                        rx.menu.separator(),
-                        rx.menu.item("Accesorios"),
                         size="2",
                     ),
                 )
@@ -309,20 +305,6 @@ def header() -> rx.Component:
                     rx.link(
                         rx.button("Sudaderas", style=style.BUTTON, on_click=ProductsState.change_page_loading(True)),
                         href=f"{Route.PRODUCTS.value}/sweatshirt"
-                    ),
-                    rx.center(
-                        rx.divider(orientation="vertical", border_color="black"),
-                        height="2em",
-                    ),
-                    rx.link(
-                        rx.button("Pantalones", style=style.BUTTON),
-                    ),
-                    rx.center(
-                        rx.divider(orientation="vertical", border_color="black"),
-                        height="2em",
-                    ),
-                    rx.link(
-                        rx.button("Accesorios", style=style.BUTTON),
                     ),
                     direction="row",
                     align="center",
