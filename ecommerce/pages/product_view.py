@@ -212,14 +212,16 @@ def product_info_for_mobile() -> rx.Component:
             align="center",
             spacing="6"
         ),
-        rx.flex(
-            rx.button(
-                rx.icon(tag="shopping-cart"),
-                "Añadir a la cesta",
-                color_scheme="green",
-                on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
-            ),
-            padding_top="2em"
+        rx.center(
+            rx.flex(
+                rx.button(
+                    rx.icon(tag="shopping-cart"),
+                    "Añadir a la cesta",
+                    color_scheme="green",
+                    on_click= ShoppingState.add_product_to_shopping_cart(ProductState.product.partnumber)
+                ),
+                padding_top="2em"
+            )
         ),
         direction="column",
         spacing="5",
