@@ -18,7 +18,7 @@ class ConfirmOrderState(rx.State):
 @rx.page(
     route=f"{Route.CONFIRM_ORDER.value}/[order_id]",
     title=const.ORDER_CONFIRM,
-    on_load=ShoppingState.clean_shopping_cart
+    on_load=[ShoppingState.clean_shopping_cart, ConfirmOrderState.get_order_id]
 )
 def confirm_order() -> rx.Component:
     return rx.flex(
