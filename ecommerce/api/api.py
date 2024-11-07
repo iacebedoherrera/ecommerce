@@ -15,7 +15,7 @@ from .PayPalAPI import PayPalAPI, OrderBody
 from ecommerce.type_table.order_status import OrderStatus
 from ecommerce.dal.dao.OrderDAO import OrderDAO
 from ecommerce.dal.dao.OrderItemDAO import OrderItemDAO
-from ecommerce.dal.models.order_item import OrderItem
+from ecommerce.dal.models.order import OrderItem
 
 
 user_api = UserAPI()

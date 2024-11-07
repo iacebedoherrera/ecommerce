@@ -12,14 +12,6 @@ class Address(rx.Model, table=True):
     users: List["User"] = Relationship(back_populates="address")
 
     
-    def __str__(self):
-        return (
-            f"{self.address}, \n"
-            f"{self.city}, \n"
-            f"{self.autonomous_community}, \n"
-            f"{self.postal_code}"
-        )
-    
 
 class User(rx.Model, table=True):
     id: int = Field(default=None, primary_key=True)

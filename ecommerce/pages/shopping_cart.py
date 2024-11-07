@@ -15,7 +15,7 @@ dotenv.load_dotenv()
 @rx.page(
     route=Route.SHOPPING_CART.value,
     title="Carrito",
-    on_load=[ShoppingState.load_shopping_cart, ShoppingState.save_paypal_data]
+    on_load=[ShoppingState.load_shopping_cart, ShoppingState.save_paypal_data, LoginState.verify_pay]
 )
 def shopping_cart() -> rx.Component:
     return rx.flex(
@@ -71,9 +71,9 @@ def show_checkout() -> rx.Component:
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
             rx.cond(
                 #LoginState.get_user_address() is None or LoginState.get_user_phone() == "",
-                LoginState.user.address_id is None or LoginState.user.phone_number == "",
-                show_review_user_data(),
-                show_payment()
+                LoginState.can_pay,
+                show_payment(),
+                show_review_user_data()
             ),
             rx.text("Debes iniciar sesión para poder realizar tu compra")
         ),

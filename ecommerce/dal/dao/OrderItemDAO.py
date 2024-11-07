@@ -1,5 +1,5 @@
 import reflex as rx
-from ecommerce.dal.models.order_item import OrderItem
+from ecommerce.dal.models.order import OrderItem
 
 
 class OrderItemDAO:

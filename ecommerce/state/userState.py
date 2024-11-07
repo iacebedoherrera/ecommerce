@@ -27,6 +27,7 @@ class LoginState(GoogleAuthState):
                       phone_number="", address_id=None, disabled=False,
                       is_google_user=False)
     address: Address = Address(address = "", city = "", autonomous_community = "", postal_code = "")
+    can_pay: bool = False
     login_cookie: str = rx.Cookie(
         name=const.LOG_IN_COOKIE_NAME, 
         max_age=const.ACCESS_TOKEN_DURATION,
@@ -151,11 +152,8 @@ class LoginState(GoogleAuthState):
             self.address = address
             self.change_success_changes()
         
-    def get_user_address(self):
-        return self.user.address_id
-    
-    def get_user_phone(self):
-        return self.user.phone_number
+    def verify_pay(self):
+        self.can_pay = self.user.address_id is not None and self.user.phone_number != ""
  
 
 
