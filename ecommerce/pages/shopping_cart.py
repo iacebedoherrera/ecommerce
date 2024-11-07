@@ -1,5 +1,5 @@
 import reflex as rx
-import os, dotenv
+import dotenv
 from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 import ecommerce.utils as utils
@@ -70,7 +70,6 @@ def show_checkout() -> rx.Component:
         rx.cond(
             LoginState.login_cookie is not None and LoginState.login_cookie != "",
             rx.cond(
-                #LoginState.get_user_address() is None or LoginState.get_user_phone() == "",
                 LoginState.can_pay,
                 show_payment(),
                 show_review_user_data()
