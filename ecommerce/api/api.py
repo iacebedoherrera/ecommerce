@@ -157,7 +157,6 @@ class TokenRequest(BaseModel):
     items: dict
 
 async def save_order(request: TokenRequest):
-    # Faltaria comprobar si realmente se hizo el pago con una peticion a la api de paypal
     user: User = await get_user(request.token)
     order: Order = Order(
         user_id=user.id,
