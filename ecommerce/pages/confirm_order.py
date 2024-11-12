@@ -12,13 +12,13 @@ from ecommerce.styles.styles import Size
 class ConfirmOrderState(rx.State):
     order_id: int
 
-    def get_order_id(self):
+    async def get_order_id(self):
         self.order_id = self.router.page.params.get("order_id", "")
 
 @rx.page(
     route=f"{Route.CONFIRM_ORDER.value}/[order_id]",
     title=const.ORDER_CONFIRM,
-    on_load=[ShoppingState.clean_shopping_cart, ConfirmOrderState.get_order_id]
+    on_load=[ConfirmOrderState.get_order_id, ShoppingState.clean_shopping_cart]
 )
 def confirm_order() -> rx.Component:
     return rx.flex(
@@ -43,6 +43,7 @@ def confirm() -> rx.Component:
         ),
         direction="column",
         align="center",
+        spacing="4",
         width="100%",
         padding_bottom=Size.BIG.value
     )
