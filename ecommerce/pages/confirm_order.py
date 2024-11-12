@@ -6,19 +6,14 @@ from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
 from ecommerce.styles.styles import Size
+from ecommerce.state.confirmOrderState import ConfirmOrderState
 
 
-
-class ConfirmOrderState(rx.State):
-    order_id: int
-
-    async def get_order_id(self):
-        self.order_id = self.router.page.params.get("order_id", "")
 
 @rx.page(
     route=f"{Route.CONFIRM_ORDER.value}/[order_id]",
     title=const.ORDER_CONFIRM,
-    on_load=[ConfirmOrderState.get_order_id, ShoppingState.clean_shopping_cart]
+    on_load=ShoppingState.clean_shopping_cart
 )
 def confirm_order() -> rx.Component:
     return rx.flex(
