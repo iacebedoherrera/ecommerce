@@ -5,10 +5,6 @@ import ecommerce.styles.styles as styles
 
 
 
-class State(rx.State):
-    pass
-
-# Create app instance and add index page.
 app = rx.App(
     style=styles.BASE_STYLE,
     theme=rx.theme(
