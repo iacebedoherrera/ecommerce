@@ -30,23 +30,18 @@ def products_index() -> rx.Component:
                    "products/sweatshirt/020302/020302_01.jpg", "products/sweatshirt/020402/020402_01.jpg"])
     
     return rx.flex(
-        rx.flex(
-            carousel(
-                rx.foreach(images, create_image_carousel),
-                autoPlay=True,
-                interval=3000,
-                infiniteLoop=True,
-                showThumbs=False, 
-                showStatus=False,
-                stopOnHover=True,
-                showArrows=False,
-                width="80vw",
-                max_width="700px",
-                height="auto"
-            ),
-            direction="column",
-            align="center",
-            width="100%"
+        carousel(
+            rx.foreach(images, create_image_carousel),
+            autoPlay=True,
+            interval=3000,
+            infiniteLoop=True,
+            showThumbs=False, 
+            showStatus=False,
+            stopOnHover=True,
+            showArrows=False,
+            width="80vw",
+            max_width="700px",
+            height="auto"
         ),
         rx.flex(
             rx.center(
@@ -90,7 +85,9 @@ def products_index() -> rx.Component:
             spacing="5"
         ),
         direction="column",
-        spacing="9"
+        spacing="9",
+        align="center",
+        width="100%"
     )
 
 

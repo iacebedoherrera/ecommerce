@@ -7,7 +7,7 @@ from typing import List
 
 class Order(rx.Model, table=True):
     id: int = Field(default=None, primary_key=True)
-    user_id: int
+    user_id: int = Field(default=None, foreign_key="user.id")
     address_id: int
     creation_date: datetime = Field(default_factory=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     status_id: int

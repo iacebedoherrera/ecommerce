@@ -267,7 +267,7 @@ def header() -> rx.Component:
                 ),
                 direction="row",
                 position="absolute",
-                spacing="clamp(5px, 10vw, 80px)",
+                gap="10vw",
                 right="5%",
             ),
             direction="row",

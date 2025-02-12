@@ -16,7 +16,6 @@ from ecommerce.type_table.order_status import OrderStatus
 from ecommerce.dal.dao.OrderDAO import OrderDAO
 from ecommerce.dal.dao.OrderItemDAO import OrderItemDAO
 from ecommerce.dal.models.order import OrderItem
-from ecommerce.state.confirmOrderState import ConfirmOrderState
 
 
 user_api = UserAPI()
@@ -166,7 +165,6 @@ async def save_order(request: TokenRequest):
     )
     order_id = OrderDAO.insert(order)
     await save_order_items(request.items, order_id)
-    ConfirmOrderState.order_id = order_id
     return {"order_id": order_id}
 
 async def save_order_items(items: dict, order_id: int):

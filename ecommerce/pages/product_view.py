@@ -167,7 +167,7 @@ def product_info() -> rx.Component:
             rx.text(ProductState.product.name, size="7", weight="bold"),
             rx.text(ProductState.product.price + " €", size="5"),
             direction="column",
-            align="2"
+            spacing="2"
         ),
         rx.flex(  
             rx.text("Talla: "),    
@@ -199,7 +199,7 @@ def product_info_for_mobile() -> rx.Component:
             rx.text(ProductState.product.name, size="7", weight="bold"),
             rx.text(ProductState.product.price + " €", size="5"),
             direction="column",
-            align="2"
+            spacing="2"
         ),
         rx.flex(  
             rx.text("Talla: "),    

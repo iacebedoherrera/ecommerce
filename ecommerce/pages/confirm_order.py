@@ -6,14 +6,13 @@ from ecommerce.components.header import header
 from ecommerce.components.footer import footer
 from ecommerce.state.shoppingState import ShoppingState
 from ecommerce.styles.styles import Size
-from ecommerce.state.confirmOrderState import ConfirmOrderState
 
 
 
 @rx.page(
     route=f"{Route.CONFIRM_ORDER.value}/[order_id]",
     title=const.ORDER_CONFIRM,
-    on_load=[ShoppingState.clean_shopping_cart, ConfirmOrderState.get_order_id]
+    on_load=[ShoppingState.clean_shopping_cart]
 )
 def confirm_order() -> rx.Component:
     return rx.flex(
@@ -34,7 +33,7 @@ def confirm() -> rx.Component:
             "¡Enhorabuena! Has realizado tu compra con éxito"
         ),
         rx.text(
-            f"Tu código de pedido es: {ConfirmOrderState.order_id}"
+            f"Tu código de pedido es: {rx.State.order_id}"
         ),
         direction="column",
         align="center",
