@@ -23,6 +23,7 @@ class LoginState(GoogleAuthState):
     show_success_changes: bool = False
     show_log_in: bool = False
     show_log_out: bool = False
+    show_recover_password: bool = False
     user: User = User(name="", surname="", email="", password="", 
                       phone_number="", address_id=None, disabled=False,
                       is_google_user=False)
@@ -60,6 +61,9 @@ class LoginState(GoogleAuthState):
 
     def change_show_log_out(self):
         self.show_log_out = not (self.show_log_out)
+
+    def change_recover_password(self):
+        self.show_recover_password = not (self.show_recover_password)
 
     async def log_in(self, form_data: dict, show_message: bool):
         try:
@@ -154,6 +158,9 @@ class LoginState(GoogleAuthState):
         
     def verify_pay(self):
         self.can_pay = self.user.address_id is not None and self.user.phone_number != ""
+
+    async def recover_password(self, form_data: dict):
+        await api.recover_password(form_data["email"])
  
 
 

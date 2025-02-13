@@ -125,6 +125,31 @@ def header() -> rx.Component:
                         ),
                         open=LoginState.show
                     ),
+                    # Recuperar contraseña
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.center(
+                                rx.dialog.title("Recuperar contraseña")
+                            ),
+                            recover_password(),
+                            rx.flex(
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("Cancelar", color_scheme="red", on_click=LoginState.change_recover_password),
+                                        direction="column",
+                                        margin_top="0.5em"
+                                    )
+                                ),
+                                direction="column"
+                            ),
+                            rx.flex(
+                                rx.divider(),
+                                margin_top="20px",
+                                margin_bottom="20px"
+                            )
+                        ),
+                        open=LoginState.show_recover_password
+                    ),
                     # Inicio de sesion OK
                     rx.dialog.root(
                         rx.dialog.content(
@@ -347,6 +372,15 @@ def log_in() -> rx.Component:
                 spacing="3"
             ),
             rx.flex(
+                rx.button(
+                    "Recuperar contraseña", 
+                    variant="ghost", 
+                    on_click=[LoginState.change, LoginState.change_recover_password]
+                ),
+                direction="column",
+                align="end"
+            ),
+            rx.flex(
                 rx.button("Iniciar sesión", type="submit", on_click=LoginState.change),
                 direction="column"
             ),
@@ -357,6 +391,29 @@ def log_in() -> rx.Component:
         reset_on_submit=True,
     )
 
+# Method showing the recover password form
+def recover_password() -> rx.Component:
+    return rx.form(
+        rx.flex(
+            rx.flex(
+                rx.input(
+                    placeholder="Email",
+                    name="email",
+                    required=True,
+                ),
+                direction="column",
+                spacing="3"
+            ),
+            rx.flex(
+                rx.button("Mandar email", type="submit", on_click=LoginState.change_recover_password),
+                direction="column"
+            ),
+            direction="column",
+            spacing="6"
+        ),
+        on_submit=lambda form_data: LoginState.recover_password(form_data, True),
+        reset_on_submit=True,
+    )
 
 # Method showing the register form
 def register() -> rx.Component:
