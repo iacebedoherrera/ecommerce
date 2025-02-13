@@ -180,3 +180,6 @@ async def save_order_items(items: dict, order_id: int):
         # Restamos del stock
         await product_api.update_quantity_by_partnumber(sku, -quantity)
 
+async def recover_password(email: str):
+    await user_api.recover_password(email)
+

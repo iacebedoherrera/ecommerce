@@ -242,7 +242,7 @@ def user_data_form(user: User):
             ),
             #! Contraseña
             rx.cond(
-                user.is_google_user is False,
+                user.is_google_user == False,
                 rx.flex(
                     rx.text("Contraseña: "),
                     rx.cond(
@@ -333,7 +333,7 @@ def user_data_form_for_mobile(user: User):
             ),
             #! Contraseña
             rx.cond(
-                user.is_google_user is False,
+                user.is_google_user == False,
                 rx.flex(
                     rx.text("Contraseña: "),
                     rx.cond(
