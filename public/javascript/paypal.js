@@ -11,7 +11,7 @@ async function paypalButton() {
             try {
                 let products = localStorage.getItem('products')
                 let amount = localStorage.getItem('amount')
-                let backend_url = 'https://ecommerce-f8v1.onrender.com'
+                let backend_url = 'http://localhost:8000'
                 const response = await fetch(backend_url + "/order/checkout", {
                     method: "POST",
                     headers: {
@@ -39,7 +39,7 @@ async function paypalButton() {
             }
         },
         async onApprove(data, actions) {
-            let backend_url = 'https://ecommerce-f8v1.onrender.com'
+            let backend_url = 'http://localhost:8000'
             try {
                 const response = await fetch(backend_url + `/orders/${data.orderID}/capture`, {
                     method: "POST",
