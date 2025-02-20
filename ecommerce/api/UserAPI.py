@@ -15,6 +15,7 @@ from ecommerce.dal.models.user import User
 from typing import Annotated
 from ecommerce import const
 from ecommerce.api import api
+from ecommerce.service.emailService import EmailService
 
 
 
@@ -24,12 +25,6 @@ class UserAPI:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     ALGORITHM = const.ALGORITHM
     ACCESS_TOKEN_DURATION = const.ACCESS_TOKEN_DURATION
-
-    # EMAIL
-    EMAIL = os.environ.get("ECOMMERCE_EMAIL")
-    EMAIL_PASSWORD = os.environ.get("ECOMMERCE_EMAIL_PASSWORD")
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587
 
     oauth2 = OAuth2PasswordBearer(tokenUrl="/users/login")
     crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -131,13 +126,9 @@ class UserAPI:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
+
     # Method that allows a user to recover his password
     async def recover_password(self, email: str):
-        msg = MIMEMultipart()
-        msg['From'] = self.EMAIL
-        msg['To'] = email
-        msg['Subject'] = "Recuperar contraseña"
-
         password = self.generate_password(12)
         mensaje = (f"Esta es tu nueva contraseña: {password}")
         try:
@@ -150,22 +141,8 @@ class UserAPI:
                 detail="Can't reset password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
-        msg.attach(MIMEText(mensaje, 'plain'))
-
-        try:
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
-            server.starttls()
-            server.login(self.EMAIL, self.EMAIL_PASSWORD)
-
-            server.sendmail(self.EMAIL, msg['To'], msg.as_string())
-            print("Correo enviado exitosamente!")
-
-        except Exception as e:
-            print(f"Error al enviar el correo: {e}")
-
-        finally:
-            server.quit()
+        
+        await EmailService.sendEmail(email, "Recuperar contraseña", mensaje)
 
     
     # Method that creates a secure password

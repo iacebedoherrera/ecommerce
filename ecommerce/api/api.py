@@ -1,9 +1,13 @@
+from typing import List
 import reflex as rx
 from datetime import datetime
 from pydantic import BaseModel
+from ecommerce.dal.dto.product_email import ProductEmail
+from ecommerce.dal.models.product import Product
 from ecommerce.dal.models.user import User
 from ecommerce.dal.models.user import Address
 from ecommerce.dal.models.order import Order
+from ecommerce.service.emailService import EmailService
 from .UserAPI import UserAPI
 from .ProductAPI import ProductAPI
 from ecommerce.dal.dao.UserDAO import UserDAO
@@ -21,6 +25,7 @@ from ecommerce.dal.models.order import OrderItem
 user_api = UserAPI()
 paypal_api = PayPalAPI()
 product_api = ProductAPI()
+email_service = EmailService()
 
 
 async def get_user(token: str) -> User:
@@ -164,10 +169,24 @@ async def save_order(request: TokenRequest):
         status_id=OrderStatus.CREATED.value
     )
     order_id = OrderDAO.insert(order)
-    await save_order_items(request.items, order_id)
+    order_items = create_order_item_list(request.items, order_id)
+    await save_order_items(order_items)
+    # Mandamos un email de confirmacion
+    address: Address = AddressDAO.find_address_by_id(user.address_id)
+    products_for_email: List[ProductEmail] = await create_product_list_for_email(order_items)
+    msg: str = email_service.email_body_order_created(user.name, order_id, products_for_email, address)
+    await email_service.sendEmail(user.email, "Pedido confirmado", msg)
     return {"order_id": order_id}
 
-async def save_order_items(items: dict, order_id: int):
+async def save_order_items(order_items: List[OrderItem]):
+    for order_item in order_items:
+        OrderItemDAO.insert(order_item)
+        # Restamos del stock
+        await product_api.update_quantity_by_partnumber(order_item.partnumber, -order_item.quantity)
+
+def create_order_item_list(items: dict, order_id: int):
+    order_items: List[OrderItem] = []
+    
     for sku in items.keys():
         quantity = items.get(sku)
         order_item: OrderItem = OrderItem(
@@ -176,9 +195,18 @@ async def save_order_items(items: dict, order_id: int):
             quantity=quantity,
             creation_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
-        OrderItemDAO.insert(order_item)
-        # Restamos del stock
-        await product_api.update_quantity_by_partnumber(sku, -quantity)
+        order_items.append(order_item)
+
+    return order_items
+
+async def create_product_list_for_email(order_items: List[OrderItem]):
+    products_for_email: List[ProductEmail] = []
+    for order_item in order_items:
+        product: Product = await product_api.get_product_by_partnumber(order_item.partnumber)
+        product_email: ProductEmail = ProductEmail(name=product.name, qty=order_item.quantity, price=product.price)
+        products_for_email.append(product_email)
+
+    return products_for_email
 
 async def recover_password(email: str):
     await user_api.recover_password(email)

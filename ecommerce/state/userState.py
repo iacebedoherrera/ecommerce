@@ -168,10 +168,14 @@ class LoginState(GoogleAuthState):
 class RegisterState(rx.State):
     show: bool = False
     form_data: dict = {}
+    show_register_ok: bool = False
     show_error_missing_parameter: bool = False
 
     def change(self):
         self.show = not (self.show)
+
+    def change_show_register_ok(self):
+        self.show_register_ok = not (self.show_register_ok)
 
     def change_error_missing_parameter(self):
         self.show_error_missing_parameter = not (self.show_error_missing_parameter)
@@ -181,8 +185,12 @@ class RegisterState(rx.State):
                 form_data["surname"] == "" or 
                 form_data["email"] == "" or 
                 form_data["password"] == ""):
-            self.change_error_missing_parameter
+            self.change_error_missing_parameter()
         else:
-            self.form_data = form_data
-            self.form_data["is_google_user"] = False
-            await api.register_user(self.form_data)
+            try:
+                self.form_data = form_data
+                self.form_data["is_google_user"] = False
+                await api.register_user(self.form_data)
+                self.change_show_register_ok()
+            except Exception:
+                self.change_error_missing_parameter()
