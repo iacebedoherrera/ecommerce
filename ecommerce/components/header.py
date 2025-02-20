@@ -241,6 +241,7 @@ def header() -> rx.Component:
                         ),
                         open=LoginState.show_error_existing_user
                     ),
+                    # Registro usuario
                     rx.dialog.root(
                         rx.dialog.content(
                             rx.center(
@@ -260,6 +261,30 @@ def header() -> rx.Component:
                         ),
                         open=RegisterState.show
                     ),
+                    # Inicio de sesion OK
+                    rx.dialog.root(
+                        rx.dialog.content(
+                            rx.flex(
+                                rx.center(
+                                    rx.dialog.title(
+                                        rx.icon("user-round-check", color="green", size=100)
+                                    )
+                                ),
+                                rx.text("Registrado correctamente. Ahora inicie sesión!"),
+                                rx.dialog.close(
+                                    rx.flex(
+                                        rx.button("OK", color_scheme="blue", on_click=RegisterState.change_show_register_ok),
+                                        direction="column"
+                                    )
+                                ),
+                                direction="column",
+                                align="center",
+                                spacing="3"
+                            ),
+                        ),
+                        open=RegisterState.show_register_ok
+                    ),
+                    # Registro KO
                     rx.dialog.root(
                         rx.dialog.content(
                             rx.flex(
@@ -268,7 +293,10 @@ def header() -> rx.Component:
                                         rx.icon("circle-alert", color="red", size=100)
                                     )
                                 ),
-                                rx.text("Faltan parámetros obligatorios. Inténtelo de nuevo."),
+                                rx.flex(
+                                    rx.text("Faltan parámetros obligatorios o existe algún error en ellos. Inténtelo de nuevo."),
+                                    text_align="center"
+                                ),
                                 rx.dialog.close(
                                     rx.flex(
                                         rx.button("Cancelar", color_scheme="red", on_click=RegisterState.change_error_missing_parameter),
